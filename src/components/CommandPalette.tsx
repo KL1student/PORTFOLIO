@@ -117,19 +117,28 @@ export function CommandPalette() {
       item.type.toLowerCase().includes(query.toLowerCase())
   );
 
+  const closePalette = () => {
+    setQuery("");
+    setIsOpen(false);
+  };
+
   // Global Shortcut Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
+        setSelectedIndex(0);
         setIsOpen((prev) => !prev);
       }
       if (e.key === "Escape" && isOpen) {
-        setIsOpen(false);
+        closePalette();
       }
     };
 
-    const handleCustomOpen = () => setIsOpen(true);
+    const handleCustomOpen = () => {
+      setSelectedIndex(0);
+      setIsOpen(true);
+    };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("toggle-command-palette", handleCustomOpen);
@@ -143,9 +152,6 @@ export function CommandPalette() {
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
-      setSelectedIndex(0);
-    } else {
-      setQuery("");
     }
   }, [isOpen]);
 
@@ -160,7 +166,7 @@ export function CommandPalette() {
     } else if (e.key === "Enter" && filteredItems[selectedIndex]) {
       e.preventDefault();
       filteredItems[selectedIndex].action();
-      setIsOpen(false);
+      closePalette();
     }
   };
 
@@ -169,7 +175,7 @@ export function CommandPalette() {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-md animate-fadeIn">
       {/* Backdrop click to close */}
-      <div className="fixed inset-0" onClick={() => setIsOpen(false)} />
+      <div className="fixed inset-0" onClick={closePalette} />
 
       {/* Modal Dialog */}
       <div className="relative w-full max-w-xl rounded-2xl bg-[var(--bg-body)]/95 border border-[var(--border-active)] shadow-2xl overflow-hidden z-10">
@@ -208,7 +214,7 @@ export function CommandPalette() {
                   key={item.title}
                   onClick={() => {
                     item.action();
-                    setIsOpen(false);
+                    closePalette();
                   }}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`w-full p-3 rounded-xl flex items-center justify-between text-left transition-all ${

@@ -3,6 +3,23 @@
 @tailwind utilities;
 
 :root {
+  --bg-body: #f8f8f6;
+  --bg-card: #ffffff;
+  --bg-surface: #f2f2ef;
+  --text-primary: #18181b;
+  --text-secondary: #62666f;
+  --text-tertiary: #8b9099;
+  --border-glass: rgba(24, 24, 27, 0.08);
+  --border-active: rgba(24, 24, 27, 0.14);
+  --accent-cyan: #2563eb;
+  --accent-purple: #7c3aed;
+  --accent-pink: #db7180;
+  --accent-glow: rgba(37, 99, 235, 0.08);
+  --orb-1: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+  --orb-2: radial-gradient(circle, rgba(124, 58, 237, 0.06) 0%, transparent 70%);
+}
+
+[data-theme="dark"], .dark {
   --bg-body: #000000;
   --bg-card: rgba(255, 255, 255, 0.03);
   --bg-surface: rgba(255, 255, 255, 0.05);
@@ -11,27 +28,29 @@
   --text-tertiary: #6e6e73;
   --border-glass: rgba(255, 255, 255, 0.08);
   --border-active: rgba(255, 255, 255, 0.2);
-  --accent-cyan: #00f5ff;
-  --accent-purple: #8b5cf6;
-  --accent-glow: rgba(0, 245, 255, 0.15);
-  --orb-1: radial-gradient(circle, rgba(0, 245, 255, 0.08) 0%, transparent 70%);
-  --orb-2: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+  --accent-cyan: #60a5fa;
+  --accent-purple: #a78bfa;
+  --accent-pink: #fda4af;
+  --accent-glow: rgba(96, 165, 250, 0.15);
+  --orb-1: radial-gradient(circle, rgba(96, 165, 250, 0.08) 0%, transparent 70%);
+  --orb-2: radial-gradient(circle, rgba(167, 139, 250, 0.08) 0%, transparent 70%);
 }
 
 [data-theme="light"], .light {
-  --bg-body: #f5f5f7;
-  --bg-card: rgba(255, 255, 255, 0.7);
-  --bg-surface: rgba(255, 255, 255, 0.9);
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-tertiary: #86868b;
-  --border-glass: rgba(0, 0, 0, 0.08);
-  --border-active: rgba(0, 0, 0, 0.2);
-  --accent-cyan: #0071e3;
-  --accent-purple: #6366f1;
-  --accent-glow: rgba(0, 113, 227, 0.12);
-  --orb-1: radial-gradient(circle, rgba(0, 113, 227, 0.06) 0%, transparent 70%);
-  --orb-2: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
+  --bg-body: #f8f8f6;
+  --bg-card: #ffffff;
+  --bg-surface: #f2f2ef;
+  --text-primary: #18181b;
+  --text-secondary: #62666f;
+  --text-tertiary: #8b9099;
+  --border-glass: rgba(24, 24, 27, 0.08);
+  --border-active: rgba(24, 24, 27, 0.14);
+  --accent-cyan: #2563eb;
+  --accent-purple: #7c3aed;
+  --accent-pink: #db7180;
+  --accent-glow: rgba(37, 99, 235, 0.08);
+  --orb-1: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.08), transparent 70%);
+  --orb-2: radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.06), transparent 70%);
 }
 
 * {
@@ -40,6 +59,10 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html.dark {
   color-scheme: dark;
 }
 
@@ -49,11 +72,16 @@ html.light {
 
 body {
   background-color: var(--bg-body);
+  background-image: radial-gradient(circle at 12% 0%, rgba(37, 99, 235, 0.04), transparent 24%), radial-gradient(circle at 88% 8%, rgba(124, 58, 237, 0.03), transparent 22%);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.4s ease, color 0.4s ease;
   min-height: 100vh;
+}
+
+.dark body {
+  background-image: radial-gradient(circle at top left, rgba(59, 130, 246, 0.05), transparent 28%), radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.04), transparent 26%);
 }
 
 /* Custom Apple Scrollbar */
@@ -76,27 +104,132 @@ body {
 .apple-card {
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 8px 30px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .apple-card:hover {
   border-color: var(--border-active);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+
+.light .apple-card {
+  background: #ffffff;
+  border-color: rgba(24, 24, 27, 0.08);
+}
+
+.light .apple-card:hover {
+  border-color: rgba(24, 24, 27, 0.12);
+  box-shadow: 0 18px 45px -24px rgba(24, 24, 27, 0.14), 0 8px 18px -10px rgba(15, 23, 42, 0.06);
 }
 
 .frosted-nav {
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glass);
 }
 
 .light .frosted-nav {
-  background: rgba(245, 245, 247, 0.75);
+  background: rgba(255, 255, 255, 0.88);
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 30px -22px rgba(15, 23, 42, 0.14);
+}
+
+.light .ambient-orb {
+  opacity: 0.35;
+}
+
+.dark .frosted-nav {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+/* Editorial light-theme translations for legacy utility classes. */
+.light .bg-black\/40,
+.light .bg-black\/60,
+.light .bg-black\/75,
+.light .bg-black\/80,
+.light .bg-black\/90 {
+  background-color: #f2f2ef !important;
+}
+
+.light .text-cyan-300,
+.light .text-cyan-400,
+.light .text-cyan-500,
+.light .text-purple-300,
+.light .text-purple-400,
+.light .text-violet-500 {
+  color: #2563eb !important;
+}
+
+.light .text-emerald-400,
+.light .text-emerald-500 {
+  color: #16805b !important;
+}
+
+.light .border-cyan-500\/20,
+.light .border-cyan-500\/30,
+.light .border-purple-500\/20,
+.light .border-purple-500\/30 {
+  border-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+.light .bg-cyan-500\/10,
+.light .bg-cyan-500\/15,
+.light .bg-purple-500\/10,
+.light .bg-purple-500\/15 {
+  background-color: #eff6ff !important;
+}
+
+.light .bg-black\/40,
+.light .bg-black\/75,
+.light .bg-black\/80,
+.light .bg-black\/90 {
+  background-color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.light .text-white,
+.light .text-neutral-200,
+.light .text-neutral-300,
+.light .text-neutral-400 {
+  color: var(--text-primary) !important;
+}
+
+.light .text-neutral-400,
+.light .text-neutral-500,
+.light .text-slate-400 {
+  color: var(--text-secondary) !important;
+}
+
+.light .bg-white\/5,
+.light .bg-white\/10,
+.light .bg-white\/15 {
+  background: rgba(15, 23, 42, 0.02) !important;
+}
+
+.light .border-white\/10,
+.light .border-white\/15 {
+  border-color: var(--border-glass) !important;
+}
+
+.light .shadow-2xl,
+.light .shadow-lg,
+.light .shadow-xl {
+  box-shadow: 0 18px 36px -22px rgba(15, 23, 42, 0.14) !important;
+}
+
+.light .backdrop-blur-md,
+.light .backdrop-blur-2xl {
+  backdrop-filter: blur(18px) saturate(160%) !important;
+}
+
+.light a:hover,
+.light button:hover {
+  transition: all 0.2s ease;
 }
 
 /* Ambient glow orbs */

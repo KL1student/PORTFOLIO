@@ -16,13 +16,7 @@ export function ContactForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 1200);
+    setSubmitted(true);
   };
 
   const handleQuickPrompt = (prompt: string) => {
@@ -121,10 +115,10 @@ export function ContactForm() {
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-                    Message Dispatched Successfully!
+                    Message Ready to Send
                   </h3>
                   <p className="text-sm text-[var(--text-secondary)] max-w-sm mb-6">
-                    Thank you for reaching out. I will review your message and respond promptly.
+                    Your message is ready, but this form is not connected to a delivery service yet. Please use GitHub or LinkedIn to reach me directly.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -137,11 +131,12 @@ export function ContactForm() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
+                      <label htmlFor="contact-name" className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
                         Your Name
                       </label>
                       <input
                         type="text"
+                        id="contact-name"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -151,11 +146,12 @@ export function ContactForm() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
+                      <label htmlFor="contact-email" className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
                         Email Address
                       </label>
                       <input
                         type="email"
+                        id="contact-email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -166,11 +162,12 @@ export function ContactForm() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
+                    <label htmlFor="contact-subject" className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
                       Subject
                     </label>
                     <input
                       type="text"
+                      id="contact-subject"
                       required
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -180,11 +177,12 @@ export function ContactForm() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
+                    <label htmlFor="contact-message" className="block text-xs font-mono text-[var(--text-tertiary)] mb-1.5 uppercase">
                       Message
                     </label>
                     <textarea
                       rows={5}
+                      id="contact-message"
                       required
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}

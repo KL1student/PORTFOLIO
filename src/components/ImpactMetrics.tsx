@@ -94,7 +94,7 @@ export function ImpactMetrics({ project }: ImpactMetricsProps) {
           <Sparkles className="w-3 h-3 text-white" />
         </div>
         <span className="flex-1 text-xs font-medium text-[var(--text-secondary)] group-hover:text-cyan-400 transition-colors">
-          AI Guide's take on this project's impact
+          AI Guide&apos;s take on this project&apos;s impact
         </span>
         {showGuideComment ? (
           <ChevronUp className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
@@ -118,10 +118,10 @@ export function ImpactMetrics({ project }: ImpactMetricsProps) {
               </div>
               <div>
                 <div className="text-[10px] font-mono text-cyan-400 mb-1">
-                  Shivanandh's AI Guide
+                  Shivanandh&apos;s AI Guide
                 </div>
                 <p className="text-sm text-neutral-300 leading-relaxed">
-                  "{project.guideImpactComment}"
+                  &quot;{project.guideImpactComment}&quot;
                 </p>
               </div>
             </div>

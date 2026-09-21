@@ -42,10 +42,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased selection:bg-cyan-500/20 selection:text-cyan-300">
         <ThemeProvider>
-          {/* Ambient Lighting Orbs */}
-          <div className="ambient-orb orb-primary" />
-          <div className="ambient-orb orb-secondary" />
-
           {/* Navigation Bar */}
           <Navigation />
 

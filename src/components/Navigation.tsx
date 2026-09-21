@@ -45,7 +45,7 @@ export function Navigation() {
           href="/"
           className="flex items-center gap-2.5 group cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm tracking-tighter shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform duration-300">
+          <div className="w-9 h-9 rounded-lg bg-[var(--text-primary)] flex items-center justify-center text-[var(--bg-body)] font-semibold text-sm tracking-tighter group-hover:bg-blue-600 group-hover:text-white transition-colors">
             SV
           </div>
           <div className="flex flex-col">
@@ -60,12 +60,12 @@ export function Navigation() {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-card)] border border-[var(--border-glass)] backdrop-blur-md">
+        <div className="hidden md:flex items-center gap-5">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="px-3.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--bg-surface)] transition-all duration-200"
+              className="py-2 text-xs font-medium text-[var(--text-secondary)] transition-colors duration-200 hover:text-blue-600"
             >
               {link.label}
             </Link>
@@ -78,9 +78,9 @@ export function Navigation() {
           <button
             onClick={triggerCommandPalette}
             aria-label="Open Command Palette"
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-mono rounded-xl bg-[var(--bg-card)] border border-[var(--border-glass)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-active)] transition-all"
+            className="hidden sm:flex items-center gap-2 px-2 py-1.5 text-xs font-mono text-[var(--text-secondary)] hover:text-blue-600 transition-colors"
           >
-            <Command className="w-3.5 h-3.5 text-cyan-400" />
+            <Command className="w-3.5 h-3.5 text-cyan-500" />
             <span>Search</span>
             <kbd className="px-1.5 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-glass)] text-[10px] text-[var(--text-tertiary)]">
               ⌘K
@@ -91,19 +91,19 @@ export function Navigation() {
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
-            className="w-9 h-9 rounded-xl bg-[var(--bg-card)] border border-[var(--border-glass)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-active)] transition-all"
+            className="w-9 h-9 rounded-lg bg-[var(--bg-card)] border border-[var(--border-glass)] flex items-center justify-center text-[var(--text-secondary)] hover:text-blue-600 hover:border-blue-200 transition-all"
           >
             {theme === "dark" ? (
               <Sun className="w-4 h-4 text-amber-400" />
             ) : (
-              <Moon className="w-4 h-4 text-purple-600" />
+              <Moon className="w-4 h-4 text-violet-600" />
             )}
           </button>
 
           {/* Connect CTA */}
           <Link
             href="/#contact"
-            className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-[var(--text-primary)] text-[var(--bg-body)] hover:opacity-90 transition-opacity shadow-sm"
+            className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
           >
             <span>Connect</span>
             <ArrowUpRight className="w-3.5 h-3.5" />

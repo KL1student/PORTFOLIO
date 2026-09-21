@@ -74,6 +74,9 @@ export function ProjectPreviewModal({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-4 sm:inset-8 md:inset-12 lg:inset-16 z-[61] flex flex-col rounded-2xl border border-[var(--border-glass)] bg-[var(--bg-body)] shadow-2xl overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${project.title} preview`}
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border-glass)] bg-[var(--bg-surface)]">
@@ -151,6 +154,7 @@ export function ProjectPreviewModal({
                 {/* Close button */}
                 <button
                   onClick={onClose}
+                  aria-label="Close preview"
                   className="p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-glass)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-red-500/30 transition-all"
                 >
                   <X className="w-4 h-4" />

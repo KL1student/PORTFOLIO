@@ -166,10 +166,10 @@ export function LiquidChatHUD() {
         <button
           onClick={() => setIsOpen(true)}
           aria-label="Open AI Assistant"
-          className="fixed bottom-6 right-6 z-50 p-1.5 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 shadow-xl shadow-cyan-500/25 hover:scale-110 active:scale-95 transition-all duration-300 animate-bounce group"
+          className="fixed bottom-6 right-6 z-50 p-1.5 rounded-full bg-gradient-to-r from-slate-700 via-slate-600 to-violet-700 shadow-[0_24px_45px_-18px_rgba(24,24,27,0.28)] hover:scale-110 active:scale-95 transition-all duration-300 animate-bounce group"
         >
-          <div className="px-4 py-2.5 rounded-full bg-black/90 backdrop-blur-md flex items-center gap-2.5 text-white font-medium text-xs">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-cyan-400 to-purple-500 flex items-center justify-center text-[10px] shadow-sm">
+          <div className="px-4 py-2.5 rounded-full bg-white/85 text-slate-900 backdrop-blur-md flex items-center gap-2.5 font-medium text-xs ring-1 ring-slate-200 shadow-lg">
+            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-cyan-400 to-violet-500 flex items-center justify-center text-[10px] text-white shadow-sm">
               ✨
             </div>
             <span className="tracking-tight">AI Copilot</span>
@@ -182,14 +182,14 @@ export function LiquidChatHUD() {
       {isOpen && (
         <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[85vh] flex flex-col pointer-events-auto">
           {/* Top Liquid Bar */}
-          <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-black/75 dark:bg-black/85 backdrop-blur-2xl border border-white/10 text-white shadow-2xl mb-2">
+          <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-white/80 dark:bg-black/85 backdrop-blur-2xl border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-[0_24px_48px_-24px_rgba(15,23,42,0.32)] mb-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-cyan-400 to-purple-500 flex items-center justify-center text-xs font-bold shadow-sm">
+              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-cyan-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
                 AI
               </div>
               <div>
                 <div className="text-xs font-semibold tracking-tight">Shivanandh AI Agent</div>
-                <div className="text-[10px] text-cyan-400 font-mono">Gemini Fast-Lane Engine</div>
+                <div className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">Gemini Fast-Lane Engine</div>
               </div>
             </div>
 
@@ -199,8 +199,8 @@ export function LiquidChatHUD() {
                 aria-label="Toggle Voice Reading"
                 className={`p-1.5 rounded-lg border transition-colors ${
                   ttsEnabled
-                    ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300"
-                    : "bg-white/5 border-white/10 text-neutral-400 hover:text-white"
+                    ? "bg-cyan-500/10 border-cyan-500/40 text-cyan-600 dark:text-cyan-300"
+                    : "bg-slate-100 border-slate-200 text-slate-500 hover:text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-neutral-400 dark:hover:text-white"
                 }`}
                 title={ttsEnabled ? "Voice Enabled" : "Voice Disabled"}
               >
@@ -210,7 +210,7 @@ export function LiquidChatHUD() {
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
                 aria-label="Minimize Chat"
-                className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-neutral-400 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-neutral-400 dark:hover:text-white transition-colors"
               >
                 {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
               </button>
@@ -218,7 +218,7 @@ export function LiquidChatHUD() {
               <button
                 onClick={() => setIsOpen(false)}
                 aria-label="Close Chat"
-                className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-neutral-400 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-neutral-400 dark:hover:text-white transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -240,8 +240,8 @@ export function LiquidChatHUD() {
                     <div
                       className={`max-w-[88%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-lg backdrop-blur-xl border ${
                         msg.sender === "user"
-                          ? "bg-cyan-600/80 text-white border-cyan-400/30 rounded-br-sm"
-                          : "bg-black/80 text-neutral-200 border-white/10 rounded-bl-sm"
+                          ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400/30 rounded-br-sm"
+                          : "bg-slate-100 text-slate-700 border-slate-200 rounded-bl-sm dark:bg-black/80 dark:text-neutral-200 dark:border-white/10"
                       }`}
                     >
                       {msg.text}
@@ -249,7 +249,7 @@ export function LiquidChatHUD() {
 
                     {/* Dynamic Action Cards inside AI message */}
                     {msg.categoryCard === "projects" && (
-                      <div className="mt-2 w-full max-w-[92%] space-y-1.5 p-2 rounded-xl bg-black/85 border border-cyan-500/20 backdrop-blur-md">
+                      <div className="mt-2 w-full max-w-[92%] space-y-1.5 p-2 rounded-xl bg-slate-100 border border-cyan-100 backdrop-blur-md dark:bg-black/85 dark:border-cyan-500/20">
                         <button
                           onClick={() => jumpToSection("projects")}
                           className="w-full p-2 rounded-lg bg-white/5 hover:bg-cyan-500/20 text-left text-xs font-medium text-cyan-300 flex items-center justify-between transition-colors"
@@ -328,7 +328,7 @@ export function LiquidChatHUD() {
                   <button
                     key={chip.label}
                     onClick={() => jumpToSection(chip.section)}
-                    className="shrink-0 px-3 py-1.5 rounded-full bg-black/80 hover:bg-white/15 border border-white/15 text-neutral-300 hover:text-white text-[11px] font-medium backdrop-blur-md transition-all active:scale-95"
+                    className="shrink-0 px-3 py-1.5 rounded-full bg-white/85 hover:bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900 dark:bg-black/80 dark:hover:bg-white/15 dark:border-white/15 dark:text-neutral-300 dark:hover:text-white text-[11px] font-medium backdrop-blur-md transition-all active:scale-95"
                   >
                     {chip.label}
                   </button>
@@ -336,14 +336,14 @@ export function LiquidChatHUD() {
               </div>
 
               {/* Liquid Input Field & Voice Mic */}
-              <div className="flex items-center gap-2 p-2 rounded-2xl bg-black/80 dark:bg-black/90 backdrop-blur-2xl border border-white/10 shadow-2xl">
+              <div className="flex items-center gap-2 p-2 rounded-2xl bg-white/85 dark:bg-black/90 backdrop-blur-2xl border border-slate-200 dark:border-white/10 shadow-[0_18px_40px_-22px_rgba(15,23,42,0.28)]">
                 <input
                   type="text"
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder={isListening ? "Listening to your voice..." : "Ask AI or search topics..."}
-                  className="flex-1 bg-transparent px-3 py-1.5 text-xs text-white placeholder-neutral-400 focus:outline-none"
+                  className="flex-1 bg-transparent px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 dark:text-white dark:placeholder-neutral-400 focus:outline-none"
                 />
 
                 {/* Mic Speech-to-Text Button */}

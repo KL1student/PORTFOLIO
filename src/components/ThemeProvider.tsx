@@ -13,22 +13,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem("shivanandh-theme") as Theme | null;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-      applyTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initialTheme = prefersDark ? "dark" : "light";
-      setThemeState(initialTheme);
-      applyTheme(initialTheme);
-    }
-  }, []);
+  const [theme, setThemeState] = useState<Theme>("light");
 
   const applyTheme = (t: Theme) => {
     const root = document.documentElement;
@@ -41,6 +26,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.remove("light");
     }
   };
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("shivanandh-theme");
+    if (savedTheme === "dark" || savedTheme === "light") {
+      setThemeState(savedTheme);
+    }
+  }, []);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -55,7 +51,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      <div className={mounted ? "" : "opacity-0"}>{children}</div>
+      {children}
     </ThemeContext.Provider>
   );
 }
