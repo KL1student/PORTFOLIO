@@ -1,218 +1,199 @@
-import { Project } from "@/types";
+import type { Project } from "@/types";
 
 export const projectsData: Record<string, Project> = {
   mindmate: {
     id: "mindmate",
-    title: "MindMate: AI-Powered Mental Health Support Platform",
-    badge: "FLAGSHIP GENERATIVE AI & FULL STACK",
+    title: "MindMate: AI-Powered Multilingual Mental Health Support System",
+    badge: "GENERATIVE AI & FULL STACK",
     tagline:
-      "An enterprise-grade conversational AI platform integrating Google Gemini LLMs (@google/genai), real-time Server-Sent Events (SSE) streaming, emotion confidence classification, prompt injection guardrails, and crisis escalation protocols with a modern React + Vite frontend.",
-    metric1: "< 180ms",
-    sub1: "TTFB First Token latency via Server-Sent Events",
-    metric2: "99.2%",
-    sub2: "Emotion classification accuracy across user intents",
-    metric3: "100%",
-    sub3: "Automated 988 emergency escalation & injection defense",
-    archDesc:
-      "Dual-path processing engine: User Prompt → Emotion Classification → Safety Guardrails → Gemini LLM Generation → SSE Real-Time Stream to React+Vite Frontend.",
-    codeFile: "services/aiContentService.js",
-    githubUrl: "https://github.com/MindMate-mental-health-support-system/backend",
-    frontendUrl: "https://github.com/MindMate-mental-health-support-system/frontend",
-    githubLabel: "Backend Repo",
-    liveUrl: null,
-    tags: ["Google Gemini AI", "React + Vite", "Node.js", "Express", "SSE Streaming", "Crisis Guardrails"],
-    featured: true,
-    guideImpactComment: "MindMate streams therapy-grade responses in under 180ms — that's faster than most chatbots load a spinner. The emotion classifier hit 99.2% accuracy, and the crisis escalation system has a perfect safety record.",
-    challengeDetails: "Early responses hallucinated when emotion labels were ambiguous, so I tightened the prompt contract and added a safety check before generation. Streaming also exposed partial-response edge cases, which I handled by keeping the crisis path synchronous and explicit.",
-    archNodes: [
-      { id: "input", label: "User Prompt", tech: "React + Vite", rationale: "Vite's HMR and React's component model give instant UI feedback — critical for a mental health app where latency = anxiety." },
-      { id: "emotion", label: "Emotion Classifier", tech: "Custom NLP", rationale: "Classifies user emotion (sad, anxious, crisis) with 99.2% accuracy to route the prompt to the right response strategy." },
-      { id: "guard", label: "Safety Guardrails", tech: "Regex + Heuristics", rationale: "Prompt injection defense + crisis keyword detection — triggers 988 escalation before the LLM even sees the message." },
-      { id: "llm", label: "Gemini LLM", tech: "@google/genai", rationale: "Google Gemini 1.5 Flash chosen for sub-180ms TTFB — fast enough for real-time conversational therapy support." },
-      { id: "stream", label: "SSE Stream", tech: "Server-Sent Events", rationale: "SSE over WebSockets because it's simpler, unidirectional (server→client), and natively supported by all browsers." },
-      { id: "frontend", label: "React Frontend", tech: "React + TailwindCSS", rationale: "Token-by-token rendering creates a 'typing' effect that feels human — key UX decision for mental health context." },
+      "2025–2026. A multilingual mental health support application built with React, Vite, Node.js, and Express. It combines Google Gemini 2.5 Flash, persistent chat history, safety guardrails, and text and speech emotion recognition.",
+    metrics: [
+      { value: "Gemini 2.5 Flash", label: "LLM integration with prompt engineering and safety guardrails" },
+      { value: "SSE", label: "Streamed conversational responses from backend to frontend" },
+      { value: "XLM-RoBERTa + XGBoost", label: "Text and speech emotion recognition" }
     ],
-    code: `// MindMate Emotion & Crisis LLM Generation Pipeline
-const { GoogleGenAI } = require('@google/genai');
-
-class AIContentService {
-  constructor() {
-    this.client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  }
-
-  async generateResponse({ message, emotion, confidence, isCrisis }, onChunk) {
-    // 1. Format prompt with safety injection defenses
-    const systemPrompt = isCrisis 
-      ? formatCrisisPrompt(message, emotion) 
-      : formatSupportivePrompt(message, emotion, confidence);
-
-    // 2. Stream tokens in real-time over SSE
-    const responseStream = await this.client.models.generateContentStream({
-      model: 'gemini-1.5-flash',
-      contents: [{ role: 'user', parts: [{ text: systemPrompt }] }]
-    });
-
-    for await (const chunk of responseStream) {
-      if (onChunk) onChunk(chunk.text);
-    }
-  }
-}`
+    archDesc:
+      "React and Vite client with Node.js and Express services: authenticated chat and persistent history, severity-based emotion and crisis analysis, Gemini 2.5 Flash responses, and SSE delivery to the frontend.",
+    githubUrl: "https://github.com/KL1student/MindMate",
+    githubLabel: "GitHub Repository",
+    aliases: ["mental health", "chatbot", "multilingual chat"],
+    featured: true,
+    challengeDetails: "The application combines authentication and persistent chat with a severity-based pipeline for emotion analysis and crisis detection, alongside streamed LLM responses.",
+    archNodes: [
+      { id: "input", label: "Chat Application", tech: "React + Vite", rationale: "Provides the multilingual chat interface, authentication, and persistent conversation history." },
+      { id: "emotion", label: "Emotion Recognition", tech: "XLM-RoBERTa · XGBoost", rationale: "Uses XLM-RoBERTa for text emotion recognition and XGBoost for speech emotion recognition." },
+      { id: "severity", label: "Severity Pipeline", tech: "Emotion · Crisis", rationale: "Processes emotion severity and crisis signals as part of the support workflow." },
+      { id: "llm", label: "LLM Responses", tech: "Gemini 2.5 Flash", rationale: "Generates conversational responses with prompt engineering and safety guardrails." },
+      { id: "stream", label: "Response Delivery", tech: "Server-Sent Events", rationale: "Streams responses from the Node.js and Express backend to the frontend." },
+    ],
+    caseStudy: {
+      overview: "A multilingual mental health support application that combines conversational AI, persistent chat, and text and speech emotion recognition.",
+      problem: "Provide a coherent support experience that can retain conversation context, stream responses, and account for emotional severity and potential crisis signals.",
+      contribution: "Developed the frontend and backend, implemented authentication and persistent chat history, integrated Gemini 2.5 Flash with prompt and safety handling, and connected streamed responses and emotion-analysis components.",
+      implementation: [
+        { area: "Frontend", details: "React and Vite application for multilingual conversations and persistent chat history." },
+        { area: "Backend and APIs", details: "Node.js and Express services for authentication, chat workflows, and response delivery." },
+        { area: "AI integration", details: "Google Gemini 2.5 Flash with prompt engineering and safety guardrails." },
+        { area: "Emotion analysis", details: "XLM-RoBERTa for text emotion recognition and XGBoost for speech emotion recognition, used in a severity-based processing flow." },
+        { area: "Streaming", details: "Server-Sent Events stream generated responses from the backend to the frontend." }
+      ],
+      features: ["Authentication", "Persistent chat history", "Multilingual conversations", "Streamed responses", "Text and speech emotion recognition", "Severity-based emotion and crisis processing"],
+      techStack: [
+        { category: "Frontend", tools: ["React", "Vite"] },
+        { category: "Backend", tools: ["Node.js", "Express.js", "REST APIs", "JWT"] },
+        { category: "AI and ML", tools: ["Google Gemini 2.5 Flash", "XLM-RoBERTa", "XGBoost"] },
+        { category: "Integration", tools: ["Server-Sent Events", "Prompt engineering", "Safety guardrails"] }
+      ]
+    },
   },
   "oil-spill": {
     id: "oil-spill",
-    title: "Satellite Marine Oil Spill Detection (Infosys Springboard)",
-    badge: "DEEP LEARNING & REMOTE SENSING",
+    title: "AI-Based Oil Spill Detection from SAR Satellite Imagery",
+    badge: "STREAMLIT · DEEP LEARNING · REMOTE SENSING",
     tagline:
-      "Deep learning computer vision architecture analyzing Synthetic Aperture Radar (SAR) and multi-spectral satellite imagery to detect, delineate, and segment offshore oil spill disasters for environmental crisis mitigation.",
-    metric1: "94.8%",
-    sub1: "Mean IoU segmentation precision on SAR validation data",
-    metric2: "< 85ms",
-    sub2: "Per-tile inference frametime on accelerated runtime",
-    metric3: "Sentinel-1",
-    sub3: "Satellite constellation dataset compatibility",
+      "An interactive Streamlit application for analyzing SAR satellite and aerial images with an oil-spill segmentation model. Upload an image, tune detection and overlay thresholds, and compare the original image, predicted probability mask, and colorized spill overlay alongside a severity estimate.",
+    metrics: [
+      { value: "Focal Dice", label: "Loss to address class imbalance and small spill regions" },
+      { value: "Test Time Augmentation", label: "Flips and rotations with prediction fusion" },
+      { value: "IoU · Dice · Precision · Recall", label: "Evaluation metrics used for the segmentation model" }
+    ],
     archDesc:
-      "End-to-end remote sensing deep learning pipeline: SAR image calibration, speckle filtering, tile tiling, CNN/UNet feature extraction, and marine slick boundary segmentation.",
-    codeFile: "oil_spill_detection.py",
+      "Enhanced U-Net segmentation workflow: OpenCV and PIL preprocessing resizes SAR imagery to 320×320, normalizes inputs, processes binary masks, and applies augmentation. Focal Dice Loss addresses class imbalance; flip and rotation TTA predictions are fused before evaluation and interactive Streamlit visualization.",
     githubUrl:
       "https://github.com/springboardmentor112r-Agri/Oil_Spill_Detection-/tree/AI_OSD-Shivanandh_V",
-    frontendUrl: null,
     githubLabel: "Infosys Branch Repo",
-    liveUrl: null,
-    tags: ["PyTorch", "Deep Learning", "Satellite SAR", "Computer Vision", "Remote Sensing"],
+    aliases: ["oil", "spill", "sar", "satellite"],
     featured: false,
-    guideImpactComment: "This one's close to my heart — 94.8% segmentation accuracy on real Sentinel-1 SAR imagery. The inference runs at 85ms per tile, fast enough for near-real-time environmental disaster response.",
-    challengeDetails: "SAR speckle noise made small slick boundaries disappear during preprocessing. I tuned the filtering and tile overlap together so the UNet saw cleaner inputs without losing the fine edges needed for a useful mask.",
+    challengeDetails: "Severe class imbalance and small oil-spill regions motivated the use of Focal Dice Loss. Test Time Augmentation fuses predictions from flipped and rotated inputs to improve inference robustness.",
     archNodes: [
-      { id: "calibrate", label: "SAR Calibration", tech: "Sentinel-1", rationale: "Calibrates radar backscatter so changing weather and sea conditions do not distort the training signal." },
-      { id: "filter", label: "Speckle Filter", tech: "SAR Preprocess", rationale: "Reduces granular SAR noise while preserving the slick boundaries the model needs to segment." },
-      { id: "unet", label: "UNet Encoder", tech: "PyTorch", rationale: "UNet combines deep context with skip connections, preserving fine-grained coastline and spill edges." },
-      { id: "mask", label: "Spill Mask", tech: "IoU 94.8%", rationale: "Produces a pixel-level boundary that responders can use to estimate the affected marine area." },
+      { id: "preprocess", label: "Image Preprocessing", tech: "OpenCV · PIL · 320×320", rationale: "Resizes and normalizes imagery, processes binary masks, and applies data augmentation." },
+      { id: "unet", label: "Semantic Segmentation", tech: "Enhanced U-Net · PyTorch", rationale: "Segments oil-spill regions in SAR satellite imagery at the pixel level." },
+      { id: "loss", label: "Imbalance Handling", tech: "Focal Dice Loss", rationale: "Addresses severe class imbalance and improves learning on small spill regions." },
+      { id: "tta", label: "Prediction Fusion", tech: "Flip · Rotation TTA", rationale: "Combines predictions from transformed inputs to improve inference robustness." },
+      { id: "evaluation", label: "Model Evaluation", tech: "IoU · Dice · Precision · Recall", rationale: "Evaluates segmentation performance using overlap and classification metrics." },
+      { id: "deployment", label: "Interactive Inference", tech: "Streamlit", rationale: "Provides SAR image inference and visualization through a web interface." },
     ],
-    code: `# Infosys Springboard: SAR Satellite Oil Spill Segmentation
-import torch
-import torch.nn as nn
-
-class SAROilSpillDetector(nn.Module):
-    def __init__(self, in_channels=1, num_classes=2):
-        super().__init__()
-        self.encoder = nn.Sequential(
-            nn.Conv2d(in_channels, 64, kernel_size=3, padding=1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
-        )
-        self.segmentation_head = nn.Conv2d(64, num_classes, kernel_size=1)
-
-    def forward(self, x):
-        features = self.encoder(x)
-        return self.segmentation_head(features)`
+    caseStudy: {
+      overview: "An AI-based semantic segmentation system that detects and segments oil-spill regions in SAR satellite imagery, with interactive image inference and visualization.",
+      problem: "Oil spill regions can be small relative to the full satellite image, creating severe foreground/background class imbalance and making pixel-level segmentation challenging.",
+      contribution: "Developed an enhanced U-Net segmentation model, implemented Focal Dice Loss and image preprocessing/augmentation, applied flip and rotation Test Time Augmentation with prediction fusion, and deployed interactive inference with Streamlit.",
+      implementation: [
+        { area: "Input", details: "SAR satellite imagery is resized to 320×320 and normalized; binary masks are processed for segmentation." },
+        { area: "Preprocessing", details: "OpenCV and PIL support resizing, normalization, mask processing, and data augmentation." },
+        { area: "Model", details: "Enhanced U-Net in PyTorch produces pixel-level oil-spill segmentation masks." },
+        { area: "Loss", details: "Focal Dice Loss addresses class imbalance and improves learning on small spill regions." },
+        { area: "Inference", details: "Flip and rotation Test Time Augmentation predictions are fused to improve robustness." },
+        { area: "Deployment", details: "Streamlit provides interactive SAR image inference and visualization." }
+      ],
+      features: ["320×320 image preprocessing", "Binary mask processing", "Data augmentation", "Focal Dice Loss", "Flip and rotation TTA with prediction fusion", "Interactive Streamlit inference and visualization"],
+      techStack: [
+        { category: "Modeling", tools: ["Python", "PyTorch", "Enhanced U-Net", "Focal Dice Loss"] },
+        { category: "Image processing", tools: ["OpenCV", "PIL", "Data augmentation", "Test Time Augmentation"] },
+        { category: "Deployment and evaluation", tools: ["Streamlit", "IoU", "Dice Coefficient", "Precision", "Recall"] }
+      ]
+    },
   },
   coinvision: {
     id: "coinvision",
-    title: "CoinVision: Computer Vision & ML Detection",
-    badge: "COMPUTER VISION & OPENCV",
+    title: "CoinVision: Indian Coin Recognition System",
+    badge: "COMPUTER VISION & DEEP LEARNING",
     tagline:
-      "An intelligent coin detection and counting system using OpenCV edge detection, contour analysis, and machine learning classifiers to accurately recognize denominations and compute total values in real-time.",
-    metric1: "98.6%",
-    sub1: "Classification accuracy across denomination sets",
-    metric2: "< 24ms",
-    sub2: "Frame processing latency on live webcam feed",
-    metric3: "100%",
-    sub3: "Automated contour segmentation precision",
-    archDesc:
-      "Multi-stage image processing pipeline: grayscale conversion, Gaussian blur filtering, adaptive Canny edge detection, Hough Circle transformation, and feature extraction classifier.",
-    codeFile: "coin_detector.py",
-    githubUrl: "https://github.com/KL1student/Coinvision-",
-    frontendUrl: null,
-    githubLabel: "GitHub Repository",
-    liveUrl: null,
-    tags: ["Python", "OpenCV", "Canny Edge", "Contour Analysis", "Machine Learning"],
-    featured: false,
-    guideImpactComment: "98.6% classification accuracy with only 24ms per frame — CoinVision processes coins faster than you can blink. The contour segmentation pipeline nails every single edge.",
-    challengeDetails: "Reflections and uneven lighting produced fragmented contours, especially on overlapping coins. Gaussian blur and adaptive Canny thresholds reduced false contours while keeping frame processing under the live-feed latency target.",
-    archNodes: [
-      { id: "gray", label: "Grayscale", tech: "OpenCV", rationale: "Removes color noise so the detector can focus on shape and intensity changes." },
-      { id: "edges", label: "Canny Edges", tech: "OpenCV", rationale: "Adaptive thresholds expose coin boundaries without the cost of a heavier object detector." },
-      { id: "contours", label: "Contours", tech: "cv2.findContours", rationale: "Contours turn edge pixels into measurable objects for robust counting." },
-      { id: "classifier", label: "Denomination", tech: "ML Classifier", rationale: "Feature extraction separates denominations after geometry has isolated each coin." },
+      "2025. An Indian coin recognition application built with Python, TensorFlow, Keras, OpenCV, and Tkinter. The image-processing workflow prepares coin images for CNN classification and presents predictions in a desktop interface.",
+    metrics: [
+      { value: "92%", label: "Classification accuracy reported in the project resume" },
+      { value: "1,500+", label: "Coin images in the dataset" },
+      { value: "TensorFlow · Keras", label: "CNN development and model integration" }
     ],
-    code: `# CoinVision Edge & Contour Detection Pipeline
-import cv2
-import numpy as np
-
-def detect_and_count_coins(image_path: str):
-    image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (11, 11), 0)
-    edges = cv2.Canny(blurred, 30, 150)
-    
-    contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    coin_count = len(contours)
-    
-    return {"total_coins": coin_count, "processed_contours": contours}`
+    archDesc:
+      "Python image-processing pipeline using OpenCV, integrated with a TensorFlow/Keras convolutional neural network and a Tkinter graphical interface for Indian coin classification.",
+    githubUrl: "https://github.com/KL1student/CoinVision",
+    githubLabel: "GitHub Repository",
+    aliases: ["coin", "coins", "indian coin"],
+    featured: false,
+    challengeDetails: "The work focused on improving image preprocessing and augmentation, developing and tuning a CNN, then integrating the trained model with the preprocessing workflow and desktop interface.",
+    archNodes: [
+      { id: "preprocess", label: "Image Preparation", tech: "Python · OpenCV", rationale: "Prepares coin images and applies augmentation to improve input quality and generalization." },
+      { id: "cnn", label: "Coin Classifier", tech: "TensorFlow · Keras", rationale: "A convolutional neural network classifies Indian coin images." },
+      { id: "integration", label: "Model Integration", tech: "Preprocessing Pipeline", rationale: "Connects the trained model to the image preprocessing workflow." },
+      { id: "interface", label: "Desktop Interface", tech: "Tkinter", rationale: "Provides a graphical interface for automated coin classification." },
+    ],
+    caseStudy: {
+      overview: "An Indian coin recognition application that prepares coin images for CNN classification and presents predictions in a Tkinter desktop interface.",
+      problem: "Coin images need consistent preprocessing and augmentation so the classifier can learn robust visual patterns across the dataset.",
+      contribution: "Developed and optimized image preprocessing and augmentation pipelines, contributed to CNN development and tuning, integrated the trained model with the preprocessing workflow, and connected it to the Tkinter interface.",
+      implementation: [
+        { area: "Image processing", details: "Python and OpenCV preprocessing and augmentation improve image input quality and model generalization." },
+        { area: "Model", details: "A convolutional neural network developed and tuned with TensorFlow and Keras classifies Indian coin images." },
+        { area: "Integration", details: "The trained classifier is integrated with the image preprocessing workflow." },
+        { area: "Interface", details: "Tkinter provides a desktop UI for image-based coin classification." }
+      ],
+      features: ["Coin image preprocessing", "Data augmentation", "CNN-based coin classification", "Tkinter desktop interface"],
+      techStack: [
+        { category: "Modeling", tools: ["Python", "TensorFlow", "Keras", "CNN"] },
+        { category: "Image processing", tools: ["OpenCV", "Preprocessing", "Data augmentation"] },
+        { category: "Application", tools: ["Tkinter"] }
+      ]
+    },
   },
   inventory: {
     id: "inventory",
-    title: "Inventory Management: DBMS Stock Platform",
-    badge: "DBMS & DATA ARCHITECTURE",
+    title: "Inventory Management System",
+    badge: "FULL STACK WEB APPLICATION",
     tagline:
-      "A web-based database-driven inventory management system designed to track stock inflows, manage supplier records, automate reorder alerts, and enforce multi-role user access control.",
-    metric1: "ACID",
-    sub1: "Compliant relational database transactions",
-    metric2: "< 15ms",
-    sub2: "Complex multi-table join query execution time",
-    metric3: "Multi-Role",
-    sub3: "Admin, manager, and staff role authorization",
-    archDesc:
-      "Relational DBMS schema connecting product catalogs, real-time stock levels, transaction audit logs, and authenticated operator sessions.",
-    codeFile: "inventory_db.sql",
-    githubUrl: "https://github.com/KL1student/InventoryManagement",
-    frontendUrl: null,
-    githubLabel: "GitHub Repository",
-    liveUrl: null,
-    tags: ["DBMS", "SQL", "JavaScript", "Multi-Role Auth", "Relational Data"],
-    featured: false,
-    guideImpactComment: "ACID-compliant transactions with sub-15ms joins across normalized tables — this system handles real stock operations with admin, manager, and staff roles locked down tight.",
-    challengeDetails: "Stock updates could become inconsistent when an order touched several tables. Normalizing the schema and grouping writes into ACID transactions made failures recoverable instead of leaving partial inventory state behind.",
-    archNodes: [
-      { id: "roles", label: "Role Auth", tech: "RBAC", rationale: "Role-based access keeps stock edits and supplier actions limited to the operators who need them." },
-      { id: "schema", label: "Normalized Schema", tech: "SQL", rationale: "Normalization prevents duplicate inventory state and keeps supplier and catalog data consistent." },
-      { id: "transaction", label: "ACID Transaction", tech: "Relational DB", rationale: "Atomic writes prevent partial stock updates when an order or reorder operation fails." },
-      { id: "alerts", label: "Reorder Alerts", tech: "Event Rules", rationale: "Threshold rules surface low stock early so teams can act before a product goes out of stock." },
+      "2023–2024. A full-stack inventory management web application built with PHP and MySQL to manage products, categories, stock levels, and inventory transactions through CRUD workflows.",
+    metrics: [
+      { value: "PHP", label: "Server-side form and application logic" },
+      { value: "MySQL", label: "Relational storage for inventory data" },
+      { value: "CRUD", label: "Product, category, stock, and transaction workflows" }
     ],
-    code: `-- Inventory Management Relational Schema
-CREATE TABLE inventory_items (
-    item_id INT PRIMARY KEY AUTO_INCREMENT,
-    item_name VARCHAR(255) NOT NULL,
-    category_id INT,
-    quantity_in_stock INT DEFAULT 0,
-    unit_price DECIMAL(10, 2),
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(category_id)
-);`
+    archDesc:
+      "PHP application logic processes form input and database queries against MySQL schemas for inventory records and stock updates, with a responsive HTML, CSS, and JavaScript interface.",
+    githubUrl: "https://github.com/KL1student/Inventory-Management-System",
+    githubLabel: "GitHub Repository",
+    aliases: ["inventory", "stock", "products"],
+    featured: false,
+    challengeDetails: "The database schema organizes items, categories, and stock updates to support consistent inventory records across application workflows.",
+    archNodes: [
+      { id: "interface", label: "Responsive Interface", tech: "HTML · CSS · JavaScript", rationale: "Provides navigation, dynamic form inputs, and inventory record displays." },
+      { id: "server", label: "Application Logic", tech: "PHP", rationale: "Processes user input and forms, runs database queries, and implements CRUD operations." },
+      { id: "schema", label: "Inventory Database", tech: "MySQL", rationale: "Relational tables manage items, categories, and stock updates." },
+      { id: "versioning", label: "Source Control", tech: "Git", rationale: "Tracks changes and maintains an organized project repository." },
+    ],
+    caseStudy: {
+      overview: "A full-stack inventory management web application for tracking products, categories, stock levels, and inventory transactions.",
+      problem: "Inventory data needs to be organized and updated consistently as product details and stock quantities change.",
+      contribution: "Developed the application with PHP and MySQL, implemented server-side form processing and CRUD workflows, designed relational data structures for inventory records, and built the responsive interface.",
+      implementation: [
+        { area: "Frontend", details: "HTML, CSS, and JavaScript provide navigation, dynamic form inputs, and inventory record displays." },
+        { area: "Backend", details: "PHP processes user input and forms, executes database queries, and implements create, read, update, and delete operations." },
+        { area: "Database", details: "MySQL relational schemas manage items, categories, and stock updates." },
+        { area: "Development workflow", details: "Git tracks source changes and keeps the project organized; Apache is part of the listed technology stack." }
+      ],
+      features: ["Product management", "Category management", "Stock level tracking", "Inventory transaction management", "Responsive inventory records"],
+      techStack: [
+        { category: "Frontend", tools: ["HTML5", "CSS3", "JavaScript"] },
+        { category: "Backend and database", tools: ["PHP", "MySQL", "CRUD operations"] },
+        { category: "Tools", tools: ["Apache", "Git"] }
+      ]
+    },
   },
   "finance-tracker": {
     id: "finance-tracker",
-    title: "Finance Tracker: Full Stack Analytics Engine",
-    badge: "FULL STACK & ANALYTICS",
+    title: "Finance Tracker: Personal Finance Web App",
+    badge: "CLIENT-SIDE FINANCIAL TRACKER",
     tagline:
-      "A comprehensive personal financial management platform providing interactive spending breakdowns, dynamic budgetary calculations, and live balance projections with a responsive UI.",
-    metric1: "0.00s",
-    sub1: "Zero latency client-side balance re-calculation",
-    metric2: "100%",
-    sub2: "Responsive modular JavaScript architecture",
-    metric3: "10+ Types",
-    sub3: "Categorized transaction analytics filters",
+      "A browser-based finance tracker for recording transactions, categorizing spending, and tracking balances with LocalStorage persistence.",
+    metrics: [
+      { value: "JavaScript", label: "Client-side transaction and balance logic" },
+      { value: "LocalStorage", label: "Transaction persistence between sessions" },
+      { value: "Categories", label: "Organized income and expense tracking" }
+    ],
     archDesc:
       "Event-driven JavaScript transaction pipeline with persistent LocalStorage state synchronization and interactive visual cash-flow metrics.",
-    codeFile: "finance_engine.js",
     githubUrl: "https://github.com/KL1student/finance-tracker",
-    frontendUrl: null,
     githubLabel: "GitHub Repository",
-    liveUrl: null,
-    tags: ["JavaScript", "DOM Engine", "Analytics", "CSS3"],
+    aliases: ["finance", "budget", "ledger"],
     featured: false,
-    guideImpactComment: "Zero-latency balance recalculation with 10+ transaction categories — every penny tracked instantly with persistent LocalStorage so nothing is ever lost.",
     challengeDetails: "The first version recalculated totals in several event handlers, so filters and persisted data could disagree. I centralized ledger updates and derived every balance and visualization from that single state source.",
     archNodes: [
       { id: "input", label: "Transaction Input", tech: "DOM Events", rationale: "A small event-driven input layer keeps adding income and expenses immediate and predictable." },
@@ -220,58 +201,64 @@ CREATE TABLE inventory_items (
       { id: "persist", label: "Persistence", tech: "LocalStorage", rationale: "LocalStorage keeps the ledger available between sessions without requiring a backend for this client-first tool." },
       { id: "analytics", label: "Analytics UI", tech: "CSS + Charts", rationale: "Derived totals and categories turn raw transactions into decisions users can act on." },
     ],
-    code: `// Finance Tracker Transaction Ledger Controller
-class TransactionEngine {
-  constructor() {
-    this.transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-  }
-
-  addTransaction(description, amount, type) {
-    const transaction = { id: Date.now(), description, amount: parseFloat(amount), type };
-    this.transactions.push(transaction);
-    this.updateBalances();
-    return transaction;
-  }
-}`
+    caseStudy: {
+      overview: "A client-side finance tracker for recording transactions, viewing categorized spending, and tracking balance changes.",
+      problem: "Personal transactions and derived balances need to stay consistent across entry, filtering, and page reloads.",
+      contribution: "Built a browser-based transaction workflow with categorized records, derived balances, visual summaries, and LocalStorage persistence.",
+      implementation: [
+        { area: "Transaction input", details: "JavaScript event handlers collect and validate income and expense entries." },
+        { area: "Ledger state", details: "A transaction list acts as the source for derived balance and category views." },
+        { area: "Persistence", details: "LocalStorage retains transactions between browser sessions." },
+        { area: "Interface", details: "HTML and CSS present transaction entry, spending breakdowns, and balance projections." }
+      ],
+      features: ["Income and expense records", "Transaction categories", "Balance calculations", "Spending breakdowns", "Persistent browser storage"],
+      techStack: [
+        { category: "Application", tools: ["JavaScript", "DOM events"] },
+        { category: "Interface", tools: ["HTML", "CSS"] },
+        { category: "Persistence and analysis", tools: ["LocalStorage", "Transaction categories"] }
+      ]
+    },
   },
   "netflix-clone": {
     id: "netflix-clone",
     title: "Netflix Clone: High-Fidelity Streaming UI",
-    badge: "LIVE WEB APPLICATION",
+    badge: "STREAMING UI CLONE",
     tagline:
       "A high-fidelity Netflix web application featuring dynamic hero movie carousels, category rows, smooth responsive video preview layouts, and sleek dark mode aesthetics.",
-    metric1: "60 FPS",
-    sub1: "Fluid horizontal scroll animation performance",
-    metric2: "Live",
-    sub2: "Deployed & hosted globally on Vercel CDN",
-    metric3: "100%",
-    sub3: "Mobile and desktop adaptive viewport layout",
+    metrics: [
+      { value: "Responsive UI", label: "Adaptive streaming catalog layout" },
+      { value: "Vercel", label: "Deployment platform" },
+      { value: "HTML · CSS · JavaScript", label: "Browser-based application stack" }
+    ],
     archDesc:
       "Modern HTML5/CSS3/JavaScript single page application deployed on Vercel edge infrastructure with optimized asset caching.",
-    codeFile: "app.js",
     githubUrl: "https://github.com/KL1student/netflix_clone",
-    frontendUrl: null,
     githubLabel: "GitHub Repository",
-    liveUrl: "https://netflix-clone-gamma-ivory.vercel.app",
-    tags: ["HTML5", "CSS3", "JavaScript", "Vercel CDN"],
+    aliases: ["netflix", "streaming"],
     featured: false,
-    guideImpactComment: "Buttery 60 FPS scroll animations, live on Vercel CDN, and fully responsive from mobile to ultrawide — this clone matches Netflix's own UI polish.",
     challengeDetails: "Large poster images caused scroll jank on smaller devices. Lazy loading, smaller responsive assets, and keeping row rendering incremental preserved smooth horizontal carousels without sacrificing visual density.",
     archNodes: [
       { id: "catalog", label: "Movie Catalog", tech: "JavaScript", rationale: "Category-driven data keeps the UI extensible as more genres and media endpoints are added." },
       { id: "rows", label: "Content Rows", tech: "DOM Builder", rationale: "Reusable row construction avoids duplicating markup for every streaming category." },
       { id: "preview", label: "Preview UI", tech: "HTML5 Video", rationale: "Lightweight previews make the browsing experience feel rich without blocking catalog interaction." },
-      { id: "cdn", label: "Edge Delivery", tech: "Vercel CDN", rationale: "Edge caching reduces distance to viewers and protects the 60 FPS browsing experience." },
+      { id: "cdn", label: "Deployment", tech: "Vercel", rationale: "Identifies the hosting platform used for the interface." },
     ],
-    code: `// Netflix Clone Dynamic Row Builder
-async function loadMovieRows(categories) {
-  for (const category of categories) {
-    const row = document.createElement('div');
-    row.className = 'movie-row';
-    const movies = await fetchCategoryMedia(category.endpoint);
-    renderMovieThumbnails(row, movies);
-    document.getElementById('catalog').appendChild(row);
-  }
-}`
+    caseStudy: {
+      overview: "A responsive streaming-service interface with a featured title area, category rows, and video previews.",
+      problem: "Present a large media catalog in a browsable layout that adapts to different screen sizes.",
+      contribution: "Built the browser interface and reusable content rows and used Vercel as its deployment platform.",
+      implementation: [
+        { area: "Catalog", details: "JavaScript organizes media into categories for display." },
+        { area: "Content rows", details: "Reusable row construction presents poster thumbnails by category." },
+        { area: "Preview interface", details: "HTML video support provides preview interaction where available." },
+        { area: "Deployment", details: "The project uses Vercel as its deployment platform." }
+      ],
+      features: ["Featured title area", "Category-based content rows", "Responsive catalog layout", "Video preview interface"],
+      techStack: [
+        { category: "Frontend", tools: ["HTML5", "CSS3", "JavaScript"] },
+        { category: "Media interface", tools: ["Category rows", "HTML video"] },
+        { category: "Deployment", tools: ["Vercel"] }
+      ]
+    },
   }
 };

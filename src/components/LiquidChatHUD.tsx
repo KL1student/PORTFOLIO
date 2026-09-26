@@ -1,380 +1,345 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { 
-  Bot, 
-  Send, 
-  Mic, 
-  MicOff, 
-  Volume2, 
-  VolumeX, 
-  X, 
-  Minimize2, 
-  Maximize2, 
-  Sparkles, 
+import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
   ArrowRight,
-  ChevronRight
+  Bot,
+  ChevronDown,
+  Mic,
+  MicOff,
+  Send,
+  Volume2,
+  VolumeX,
+  X
 } from "lucide-react";
-import { ChatMessage } from "@/types";
+import { projectsData } from "@/data/projects";
+
+interface ChatAction {
+  label: string;
+  href: string;
+}
+
+interface ChatEntry {
+  id: string;
+  sender: "user" | "assistant";
+  text: string;
+  action?: ChatAction;
+}
+
+interface RecognitionAlternative {
+  transcript: string;
+}
+
+interface RecognitionResult extends ArrayLike<RecognitionAlternative> {}
+
+interface RecognitionEvent {
+  results: ArrayLike<RecognitionResult>;
+}
+
+interface BrowserRecognition {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: RecognitionEvent) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+type RecognitionConstructor = new () => BrowserRecognition;
+type SpeechWindow = Window & {
+  SpeechRecognition?: RecognitionConstructor;
+  webkitSpeechRecognition?: RecognitionConstructor;
+};
+
+function findProjectFromQuery(query: string) {
+  const normalized = query.toLowerCase();
+  return Object.values(projectsData).find((project) =>
+    [project.id, project.title, ...project.caseStudy.techStack.flatMap((group) => group.tools), ...project.aliases].some((term) =>
+      normalized.includes(term.toLowerCase())
+    )
+  );
+}
+
+function getResponse(query: string, project: (typeof projectsData)[string] | undefined) {
+  const normalized = query.toLowerCase();
+  const targetProject = findProjectFromQuery(query);
+  const wantsNavigation = /\b(open|go to|navigate|visit|take me)\b/.test(normalized);
+
+  if (targetProject && wantsNavigation) {
+    return {
+      text: `Opening the ${targetProject.title} case study.`,
+      action: { label: "Open case study", href: `/project/${targetProject.id}` }
+    };
+  }
+
+  const sectionTargets = [
+    { words: ["about", "skills", "technical skills", "profile"], id: "about", label: "Go to profile and skills" },
+    { words: ["contact", "email", "hire", "reach"], id: "contact", label: "Go to contact" },
+    { words: ["education", "degree", "coursework", "academic"], id: "academics", label: "Go to education" },
+    { words: ["experience", "internship", "infosys"], id: "experience", label: "Go to experience" },
+    { words: ["achievement", "certification", "leadership"], id: "achievements", label: "Go to certifications and leadership" },
+    { words: ["projects", "all projects"], id: "projects", label: "Browse projects" }
+  ].find((target) => target.words.some((word) => normalized.includes(word)));
+
+  if (sectionTargets && (!project || wantsNavigation || sectionTargets.id !== "projects")) {
+    return {
+      text: `You can find that in the ${sectionTargets.id} section.`,
+      action: { label: sectionTargets.label, href: `/#${sectionTargets.id}` }
+    };
+  }
+
+  const activeProject = project ?? targetProject;
+  if (activeProject) {
+    const details = activeProject.caseStudy;
+    if (/\b(hard|challenge|problem|solution|difficult)\b/.test(normalized)) {
+      return {
+        text: `${activeProject.challengeDetails}`,
+        action: { label: "Read the challenge", href: `/project/${activeProject.id}#challenges` }
+      };
+    }
+    if (/\b(architecture|pipeline|flow|system design|diagram|backend)\b/.test(normalized)) {
+      return {
+        text: `${activeProject.archDesc} ${activeProject.archNodes.map((node) => `${node.label}: ${node.rationale}`).join(" ")}`,
+        action: { label: "View architecture", href: `/project/${activeProject.id}#architecture` }
+      };
+    }
+    if (/\b(contribution|my work|your work|built|implemented|role)\b/.test(normalized)) {
+      return {
+        text: details?.contribution ?? activeProject.tagline,
+        action: { label: "View project overview", href: `/project/${activeProject.id}#overview` }
+      };
+    }
+    if (/\b(technology|technologies|tech stack|tools|language|framework)\b/.test(normalized)) {
+      const stack = details.techStack
+        .map((group) => `${group.category}: ${group.tools.join(", ")}`)
+        .join(". ");
+      return {
+        text: stack,
+        action: { label: "View technology stack", href: `/project/${activeProject.id}#technology-stack` }
+      };
+    }
+    if (/\b(feature|features)\b/.test(normalized)) {
+      return {
+        text: details?.features.join(", ") ?? activeProject.tagline,
+        action: { label: "View project features", href: `/project/${activeProject.id}#features` }
+      };
+    }
+    if (/\b(result|results|metric|metrics|accuracy|evaluation)\b/.test(normalized)) {
+      return {
+        text: activeProject.metrics.map((metric) => `${metric.value}: ${metric.label}`).join(". "),
+        action: { label: "View project metrics", href: `/project/${activeProject.id}#metrics` }
+      };
+    }
+    return {
+      text: details?.overview ?? activeProject.tagline,
+      action: { label: "Open case study", href: `/project/${activeProject.id}` }
+    };
+  }
+
+  if (/\b(project|work|code|built)\b/.test(normalized)) {
+    return {
+      text: "The project index includes AI/ML, full-stack, computer-vision, and data-driven applications. Each entry links to its repository and case study.",
+      action: { label: "Browse projects", href: "/#projects" }
+    };
+  }
+
+  return {
+    text: "I can help you explore projects, technical contributions, architecture, experience, education, and contact details. What would you like to see?",
+    action: { label: "Browse projects", href: "/#projects" }
+  };
+}
 
 export function LiquidChatHUD() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const activeProject = Object.values(projectsData).find((project) => pathname === `/project/${project.id}`);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [inputVal, setInputVal] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome",
-      sender: "assistant",
-      text: "Hello! I am Shivanandh's AI Agent. Ask me about MindMate LLM, Infosys Springboard Oil Spill detection, or tap below to navigate.",
-      timestamp: new Date()
-    }
-  ]);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [isListening, setIsListening] = useState(false);
-  const [ttsEnabled, setTtsEnabled] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [notice, setNotice] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<BrowserRecognition | null>(null);
+  const messageSequence = useRef(0);
+  const cta = activeProject
+    ? [...activeProject.caseStudy.techStack.flatMap((group) => group.tools), activeProject.badge]
+      .some((technology) => /ai|ml|vision|pytorch|tensorflow|gemini|unet/i.test(technology))
+      ? `Ask about ${activeProject.title.split(":")[0]}’s model or pipeline`
+      : `Curious how ${activeProject.title.split(":")[0]} works?`
+    : "Want to know more about my work?";
 
-  // Auto-scroll
   useEffect(() => {
-    if (isOpen && !isMinimized) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
+    if (isOpen && !isMinimized) messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isOpen, isMinimized]);
 
-  // Voice Speech-to-Text
-  const toggleListening = () => {
-    if (isListening) {
-      setIsListening(false);
+  useEffect(() => () => {
+    recognitionRef.current?.stop();
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  }, []);
+
+  const navigate = (href: string) => {
+    setIsOpen(false);
+    if (href.startsWith("/#") && pathname === "/") {
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      document.querySelector(href.slice(1))?.scrollIntoView({ behavior });
       return;
     }
-
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser. Try Chrome/Edge!");
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      setIsListening(true);
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInputVal(transcript);
-        setIsListening(false);
-        handleSend(transcript);
-      };
-
-      recognition.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.start();
-    } catch {
-      setIsListening(false);
-    }
+    router.push(href);
   };
 
-  // Text to Speech
-  const speakText = (text: string) => {
-    if (!ttsEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  const speak = (text: string) => {
+    if (!voiceEnabled || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.05;
-    utterance.pitch = 1.0;
-    window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
   };
 
-  const handleSend = (textToSend?: string) => {
-    const query = (textToSend || inputVal).trim();
+  const sendMessage = (value = input) => {
+    const query = value.trim();
     if (!query) return;
-
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      sender: "user",
-      text: query,
-      timestamp: new Date()
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setInputVal("");
-
-    // AI Intent Processing
-    setTimeout(() => {
-      const lower = query.toLowerCase();
-      let replyText = "";
-      let categoryType: string | undefined = undefined;
-
-      if (lower.includes("challeng") || lower.includes("hard") || lower.includes("bug") || lower.includes("optimization")) {
-        replyText = "That one was tough — check the 'What was hard?' Challenges section on each project card. I documented the real bug and optimization trade-offs instead of hiding the messy parts.";
-        categoryType = "projects";
-      } else if (lower.includes("architect") || lower.includes("diagram") || lower.includes("node") || lower.includes("stack")) {
-        replyText = "Every project has an interactive architecture map. Hover a node to see why that technology was chosen — for example, MindMate uses SSE because its one-way stream keeps token-by-token responses simple and fast.";
-        categoryType = "projects";
-      } else if (lower.includes("project") || lower.includes("mindmate") || lower.includes("oil") || lower.includes("coin") || lower.includes("metric") || lower.includes("result") || lower.includes("code") || lower.includes("demo")) {
-        replyText = "Every project has measurable impact and an architecture map — MindMate streams in under 180ms with 99.2% emotion accuracy. Want to see the retrieval logic? Click 'View Code' or hover a node on any project card. The Netflix Clone even has a Live Demo you can try.";
-        categoryType = "projects";
-      } else if (lower.includes("academic") || lower.includes("education") || lower.includes("degree") || lower.includes("college")) {
-        replyText = "Shivanandh is pursuing B.Tech in CSE (Specialization in AI/ML, 2022-2026) with core coursework in Deep Learning, CV, and DBMS.";
-        categoryType = "academics";
-      } else if (lower.includes("internship") || lower.includes("experience") || lower.includes("infosys")) {
-        replyText = "Shivanandh completed the Infosys Springboard AI/ML Internship Track focusing on Satellite SAR Oil Spill Detection (94.8% IoU).";
-        categoryType = "experience";
-      } else if (lower.includes("achievement") || lower.includes("certif")) {
-        replyText = "Key achievements include Infosys Springboard verified project delivery, MindMate LLM lead development, and 6+ active production repositories.";
-        categoryType = "achievements";
-      } else if (lower.includes("contact") || lower.includes("email") || lower.includes("hire") || lower.includes("reach")) {
-        replyText = "You can connect with Shivanandh directly on GitHub @KL1student or via LinkedIn. Jump to the contact form below:";
-        categoryType = "contact";
-      } else {
-        replyText = `Regarding "${query}": Shivanandh is an AI/ML Engineer skilled in Google Gemini LLMs (@google/genai), PyTorch, Satellite SAR Computer Vision, and Next.js full-stack development.`;
-      }
-
-      const botMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        sender: "assistant",
-        text: replyText,
-        categoryCard: categoryType,
-        timestamp: new Date()
-      };
-
-      setMessages((prev) => [...prev, botMsg]);
-      speakText(replyText);
-    }, 450);
+    const sequence = ++messageSequence.current;
+    const userMessage: ChatEntry = { id: `${sequence}-user`, sender: "user", text: query };
+    setMessages((previous) => [...previous, userMessage]);
+    setInput("");
+    setNotice("");
+    const response = getResponse(query, activeProject);
+    setMessages((previous) => [...previous, {
+      id: `${sequence}-assistant`,
+      sender: "assistant",
+      text: response.text,
+      action: response.action
+    }]);
+    speak(response.text);
   };
 
-  const jumpToSection = (sectionId: string) => {
-    const el = document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+  const toggleVoiceInput = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      return;
     }
+    const speechWindow = window as SpeechWindow;
+    const Recognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      setNotice("Voice input is not supported in this browser.");
+      return;
+    }
+    const recognition = new Recognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (event) => sendMessage(event.results[0]?.[0]?.transcript ?? "");
+    recognition.onerror = () => setNotice("Voice input could not start. You can type your question instead.");
+    recognition.onend = () => setIsListening(false);
+    recognitionRef.current = recognition;
+    setIsListening(true);
+    recognition.start();
   };
+
+  const suggestions = activeProject
+    ? ["My contribution", "Architecture", "What was hard?", "Technology stack"]
+    : ["Projects", "Experience", "Education", "Contact"];
 
   return (
     <>
-      {/* Floating Collapsed Bouncing AI Pill */}
       {!isOpen && (
         <button
+          type="button"
           onClick={() => setIsOpen(true)}
-          aria-label="Open AI Assistant"
-          className="fixed bottom-6 right-6 z-50 p-1.5 rounded-full bg-gradient-to-r from-slate-700 via-slate-600 to-violet-700 shadow-[0_24px_45px_-18px_rgba(24,24,27,0.28)] hover:scale-110 active:scale-95 transition-all duration-300 animate-bounce group"
+          aria-label={cta}
+          className="fixed bottom-5 right-4 z-50 inline-flex max-w-[calc(100vw-2rem)] items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-left text-xs font-semibold text-[var(--foreground)] shadow-lg transition-transform hover:-translate-y-0.5 active:scale-[0.98] sm:bottom-6 sm:right-6"
         >
-          <div className="px-4 py-2.5 rounded-full bg-white/85 text-slate-900 backdrop-blur-md flex items-center gap-2.5 font-medium text-xs ring-1 ring-slate-200 shadow-lg">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-cyan-400 to-violet-500 flex items-center justify-center text-[10px] text-white shadow-sm">
-              ✨
-            </div>
-            <span className="tracking-tight">AI Copilot</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          </div>
+          <Bot className="h-4 w-4 shrink-0 text-[var(--accent)]" aria-hidden="true" />
+          <span className="truncate">{cta}</span>
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--foreground-muted)]" aria-hidden="true" />
         </button>
       )}
 
-      {/* Backgroundless Liquid Chat Stream Overlay */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[85vh] flex flex-col pointer-events-auto">
-          {/* Top Liquid Bar */}
-          <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-white/80 dark:bg-black/85 backdrop-blur-2xl border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-[0_24px_48px_-24px_rgba(15,23,42,0.32)] mb-2">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-cyan-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
-                AI
+        <section
+          aria-label="Liquid portfolio assistant"
+          className="fixed bottom-4 right-4 z-50 flex max-h-[min(82vh,640px)] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] shadow-2xl sm:bottom-6 sm:right-6 sm:w-[390px]"
+        >
+          <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--surface-muted)] text-[var(--accent)]">
+                <Bot className="h-4 w-4" aria-hidden="true" />
               </div>
               <div>
-                <div className="text-xs font-semibold tracking-tight">Shivanandh AI Agent</div>
-                <div className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">Gemini Fast-Lane Engine</div>
+                <p className="text-sm font-semibold">Liquid Portfolio Guide</p>
+                <p className="text-[11px] text-[var(--foreground-muted)]">{activeProject ? activeProject.title : "Explore projects and experience"}</p>
               </div>
             </div>
-
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setTtsEnabled(!ttsEnabled)}
-                aria-label="Toggle Voice Reading"
-                className={`p-1.5 rounded-lg border transition-colors ${
-                  ttsEnabled
-                    ? "bg-cyan-500/10 border-cyan-500/40 text-cyan-600 dark:text-cyan-300"
-                    : "bg-slate-100 border-slate-200 text-slate-500 hover:text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-neutral-400 dark:hover:text-white"
-                }`}
-                title={ttsEnabled ? "Voice Enabled" : "Voice Disabled"}
-              >
-                {ttsEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+            <div className="flex items-center gap-1">
+              <button type="button" onClick={() => setVoiceEnabled((enabled) => !enabled)} aria-label={voiceEnabled ? "Turn speech off" : "Turn speech on"} aria-pressed={voiceEnabled} className="rounded-md p-2 text-[var(--foreground-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]">
+                {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
               </button>
-
-              <button
-                onClick={() => setIsMinimized(!isMinimized)}
-                aria-label="Minimize Chat"
-                className="p-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-neutral-400 dark:hover:text-white transition-colors"
-              >
-                {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
+              <button type="button" onClick={() => setIsMinimized((minimized) => !minimized)} aria-label={isMinimized ? "Expand guide" : "Minimize guide"} className="rounded-md p-2 text-[var(--foreground-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]">
+                <ChevronDown className={`h-4 w-4 transition-transform ${isMinimized ? "rotate-180" : ""}`} />
               </button>
-
-              <button
-                onClick={() => setIsOpen(false)}
-                aria-label="Close Chat"
-                className="p-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-neutral-400 dark:hover:text-white transition-colors"
-              >
-                <X className="w-3.5 h-3.5" />
+              <button type="button" onClick={() => setIsOpen(false)} aria-label="Close guide" className="rounded-md p-2 text-[var(--foreground-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]">
+                <X className="h-4 w-4" />
               </button>
             </div>
-          </div>
+          </header>
 
-          {/* Liquid Messages Stream Container (No Solid Background Box) */}
           {!isMinimized && (
             <>
-              <div className="flex-1 overflow-y-auto px-2 py-3 space-y-3 max-h-[380px] no-scrollbar">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex flex-col ${
-                      msg.sender === "user" ? "items-end" : "items-start"
-                    }`}
-                  >
-                    {/* Message Bubble Capsule */}
-                    <div
-                      className={`max-w-[88%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-lg backdrop-blur-xl border ${
-                        msg.sender === "user"
-                          ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400/30 rounded-br-sm"
-                          : "bg-slate-100 text-slate-700 border-slate-200 rounded-bl-sm dark:bg-black/80 dark:text-neutral-200 dark:border-white/10"
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-
-                    {/* Dynamic Action Cards inside AI message */}
-                    {msg.categoryCard === "projects" && (
-                      <div className="mt-2 w-full max-w-[92%] space-y-1.5 p-2 rounded-xl bg-slate-100 border border-cyan-100 backdrop-blur-md dark:bg-black/85 dark:border-cyan-500/20">
-                        <button
-                          onClick={() => jumpToSection("projects")}
-                          className="w-full p-2 rounded-lg bg-white/5 hover:bg-cyan-500/20 text-left text-xs font-medium text-cyan-300 flex items-center justify-between transition-colors"
-                        >
-                          <span>🧠 MindMate AI Platform</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={() => jumpToSection("projects")}
-                          className="w-full p-2 rounded-lg bg-white/5 hover:bg-purple-500/20 text-left text-xs font-medium text-purple-300 flex items-center justify-between transition-colors"
-                        >
-                          <span>🛰️ SAR Oil Spill Detection</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={() => jumpToSection("projects")}
-                          className="w-full p-2 rounded-lg bg-white/5 hover:bg-cyan-500/20 text-left text-xs font-medium text-cyan-300 flex items-center justify-between transition-colors"
-                        >
-                          <span>🪙 CoinVision OpenCV</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-
-                    {msg.categoryCard === "academics" && (
-                      <div className="mt-2 w-full max-w-[92%] p-2 rounded-xl bg-black/85 border border-cyan-500/20 backdrop-blur-md">
-                        <button
-                          onClick={() => jumpToSection("academics")}
-                          className="w-full p-2 rounded-lg bg-white/5 hover:bg-cyan-500/20 text-left text-xs font-medium text-cyan-300 flex items-center justify-between transition-colors"
-                        >
-                          <span>🎓 View Degree & Coursework</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-
-                    {msg.categoryCard === "experience" && (
-                      <div className="mt-2 w-full max-w-[92%] p-2 rounded-xl bg-black/85 border border-cyan-500/20 backdrop-blur-md">
-                        <button
-                          onClick={() => jumpToSection("experience")}
-                          className="w-full p-2 rounded-lg bg-white/5 hover:bg-cyan-500/20 text-left text-xs font-medium text-cyan-300 flex items-center justify-between transition-colors"
-                        >
-                          <span>💼 View Infosys Internship Details</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-
-                    {msg.categoryCard === "contact" && (
-                      <div className="mt-2 w-full max-w-[92%] p-2 rounded-xl bg-black/85 border border-cyan-500/20 backdrop-blur-md">
-                        <button
-                          onClick={() => jumpToSection("contact")}
-                          className="w-full p-2 rounded-lg bg-white/5 hover:bg-cyan-500/20 text-left text-xs font-medium text-cyan-300 flex items-center justify-between transition-colors"
-                        >
-                          <span>✉️ Open Contact Form</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                      </div>
+              <div className="max-h-[min(48vh,360px)] flex-1 space-y-3 overflow-y-auto px-3 py-4" aria-live="polite">
+                {messages.length === 0 && (
+                  <div className="max-w-[92%] rounded-md border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-sm leading-relaxed text-[var(--foreground-secondary)]">
+                    {activeProject
+                      ? `Ask about your contribution, ${activeProject.title}, its architecture, or the project challenges.`
+                      : "Ask about the projects, technical contributions, experience, education, or contact details. I can also take you directly to a section or case study."}
+                  </div>
+                )}
+                {messages.map((message) => (
+                  <div key={message.id} className={`flex flex-col ${message.sender === "user" ? "items-end" : "items-start"}`}>
+                    <p className={`max-w-[92%] whitespace-pre-wrap rounded-md border px-3 py-2.5 text-sm leading-relaxed ${message.sender === "user" ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-[var(--surface-muted)] text-[var(--foreground-secondary)]"}`}>
+                      {message.text}
+                    </p>
+                    {message.action && (
+                      <button type="button" onClick={() => navigate(message.action!.href)} className="mt-2 inline-flex min-h-9 items-center gap-2 rounded-md border border-[var(--border)] px-3 text-xs font-semibold text-[var(--accent)] transition-colors hover:bg-[var(--surface-muted)]">
+                        {message.action.label}<ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
                     )}
                   </div>
                 ))}
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Horizontal Scrollable Chips Dock */}
-              <div className="py-2 px-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                {[
-                  { label: "🚀 Projects", section: "projects" },
-                  { label: "🧠 MindMate", section: "projects" },
-                  { label: "🛰️ Oil Spill", section: "experience" },
-                  { label: "🎓 Academics", section: "academics" },
-                  { label: "💼 Experience", section: "experience" },
-                  { label: "🏆 Milestones", section: "achievements" },
-                  { label: "✉️ Contact", section: "contact" }
-                ].map((chip) => (
-                  <button
-                    key={chip.label}
-                    onClick={() => jumpToSection(chip.section)}
-                    className="shrink-0 px-3 py-1.5 rounded-full bg-white/85 hover:bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900 dark:bg-black/80 dark:hover:bg-white/15 dark:border-white/15 dark:text-neutral-300 dark:hover:text-white text-[11px] font-medium backdrop-blur-md transition-all active:scale-95"
-                  >
-                    {chip.label}
+              <div className="flex gap-2 overflow-x-auto border-t border-[var(--border)] px-3 py-2 no-scrollbar">
+                {suggestions.map((suggestion) => (
+                  <button key={suggestion} type="button" onClick={() => sendMessage(suggestion)} className="min-h-8 shrink-0 rounded-full border border-[var(--border)] px-3 text-[11px] font-medium text-[var(--foreground-secondary)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]">
+                    {suggestion}
                   </button>
                 ))}
               </div>
 
-              {/* Liquid Input Field & Voice Mic */}
-              <div className="flex items-center gap-2 p-2 rounded-2xl bg-white/85 dark:bg-black/90 backdrop-blur-2xl border border-slate-200 dark:border-white/10 shadow-[0_18px_40px_-22px_rgba(15,23,42,0.28)]">
-                <input
-                  type="text"
-                  value={inputVal}
-                  onChange={(e) => setInputVal(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder={isListening ? "Listening to your voice..." : "Ask AI or search topics..."}
-                  className="flex-1 bg-transparent px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 dark:text-white dark:placeholder-neutral-400 focus:outline-none"
-                />
-
-                {/* Mic Speech-to-Text Button */}
-                <button
-                  type="button"
-                  onClick={toggleListening}
-                  aria-label="Toggle Voice Input"
-                  className={`p-2 rounded-xl border transition-all ${
-                    isListening
-                      ? "bg-red-500/20 border-red-500 text-red-400 animate-pulse"
-                      : "bg-white/5 border-white/10 text-neutral-400 hover:text-white"
-                  }`}
-                  title={isListening ? "Listening..." : "Voice Input"}
-                >
-                  {isListening ? <Mic className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-                </button>
-
-                {/* Send Button */}
-                <button
-                  type="button"
-                  onClick={() => handleSend()}
-                  disabled={!inputVal.trim()}
-                  aria-label="Send Message"
-                  className="p-2 rounded-xl bg-cyan-500 text-black hover:bg-cyan-400 transition-colors disabled:opacity-30"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              <form onSubmit={(event) => { event.preventDefault(); sendMessage(); }} className="border-t border-[var(--border)] p-3">
+                {notice && <p role="status" className="mb-2 text-xs text-[var(--foreground-muted)]">{notice}</p>}
+                <div className="flex items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--background)] px-2">
+                  <input
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                    placeholder={activeProject ? `Ask about ${activeProject.title.split(":")[0]}...` : "Ask or navigate the portfolio..."}
+                    aria-label="Ask the portfolio guide"
+                    className="min-w-0 flex-1 bg-transparent px-2 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:outline-none"
+                  />
+                  <button type="button" onClick={toggleVoiceInput} aria-label={isListening ? "Stop voice input" : "Start voice input"} aria-pressed={isListening} className="rounded-md p-2 text-[var(--foreground-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]">
+                    {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  </button>
+                  <button type="submit" disabled={!input.trim()} aria-label="Send question" className="rounded-md bg-[var(--accent)] p-2 text-[var(--accent-foreground)] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+              </form>
             </>
           )}
-        </div>
+        </section>
       )}
     </>
   );

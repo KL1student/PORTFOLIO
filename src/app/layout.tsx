@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navigation } from "@/components/Navigation";
-import { LiquidChatHUD } from "@/components/LiquidChatHUD";
 import { CommandPalette } from "@/components/CommandPalette";
+import { LiquidChatHUD } from "@/components/LiquidChatHUD";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -13,13 +14,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Shivanandh V — AI/ML Engineer & Systems Architect",
+  title: "Shivanandh V | AI/ML & Full-Stack Developer",
   description:
-    "Portfolio of Shivanandh V (@KL1student): Generative AI LLM architectures (MindMate), Infosys Springboard Satellite Oil Spill Detection, Computer Vision, and Next.js full-stack systems.",
+    "Portfolio of Shivanandh V (@KL1student), a Computer Science Engineering graduate building machine learning systems and full-stack applications with Python, PyTorch, React, and Node.js.",
   keywords: [
     "Shivanandh V",
     "KL1student",
-    "AI Engineer",
+    "AI/ML Developer",
+    "Full-Stack Developer",
     "Machine Learning",
     "MindMate",
     "Infosys Springboard",
@@ -36,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -46,9 +48,8 @@ export default function RootLayout({
           <Navigation />
 
           {/* Main Application Container */}
-          <main className="relative z-10">{children}</main>
+          <main id="top" className="relative z-10">{children}</main>
 
-          {/* Backgroundless Liquid AI Chat Overlay */}
           <LiquidChatHUD />
 
           {/* Global Spotlight ⌘K Command Palette */}

@@ -3,30 +3,29 @@ export interface Project {
   title: string;
   badge: string;
   tagline: string;
-  metric1: string;
-  sub1: string;
-  metric2: string;
-  sub2: string;
-  metric3: string;
-  sub3: string;
+  metrics: ProjectMetric[];
   archDesc: string;
-  codeFile: string;
   githubUrl: string;
-  frontendUrl?: string | null;
   githubLabel: string;
-  liveUrl?: string | null;
-  tags: string[];
-  code: string;
-  featured?: boolean;
-  guideImpactComment: string;
+  aliases: string[];
+  featured: boolean;
   challengeDetails: string;
   archNodes: ArchNode[];
+  caseStudy: ProjectCaseStudy;
 }
 
-export interface ImpactMetricItem {
-  icon: "performance" | "accuracy" | "value";
+export interface ProjectMetric {
   value: string;
   label: string;
+}
+
+export interface ProjectCaseStudy {
+  overview: string;
+  problem: string;
+  contribution: string;
+  implementation: { area: string; details: string }[];
+  features: string[];
+  techStack: { category: string; tools: string[] }[];
 }
 
 export interface ArchNode {
@@ -34,20 +33,4 @@ export interface ArchNode {
   label: string;
   tech: string;
   rationale: string;
-}
-
-export interface ChatMessage {
-  id: string;
-  sender: "user" | "assistant";
-  text?: string;
-  html?: string;
-  categoryCard?: string;
-  timestamp: Date;
-}
-
-export interface CommandItem {
-  type: "Flagship AI" | "Internship" | "Project" | "Navigation" | "Action" | "External";
-  title: string;
-  sub: string;
-  action: () => void;
 }

@@ -1,7 +1,7 @@
 import { Hero } from "@/components/Hero";
 import { AboutBento } from "@/components/AboutBento";
 import { Experience } from "@/components/Experience";
-import { ProjectsBento } from "@/components/ProjectsBento";
+import { ProjectsSection } from "@/components/ProjectsSection";
 import { AcademicsBento } from "@/components/AcademicsBento";
 import { Achievements } from "@/components/Achievements";
 import { ContactForm } from "@/components/ContactForm";
@@ -13,7 +13,7 @@ export default function HomePage() {
       <Hero />
       <AboutBento />
       <Experience />
-      <ProjectsBento />
+      <ProjectsSection />
       <AcademicsBento />
       <Achievements />
       <ContactForm />

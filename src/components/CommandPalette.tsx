@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Command, ArrowRight, FolderGit2, Briefcase, GraduationCap, Trophy, Mail, ExternalLink } from "lucide-react";
+import { Search, Command, ArrowRight, FolderGit2, GraduationCap, Trophy, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
+import { projectsData } from "@/data/projects";
 
 export function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,67 +13,41 @@ export function CommandPalette() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const projectItems = Object.values(projectsData).map((project) => ({
+    type: "Project",
+    title: project.title,
+    sub: project.caseStudy.techStack.flatMap((group) => group.tools).slice(0, 4).join(" · "),
+    action: () => router.push(`/project/${project.id}`),
+    icon: FolderGit2
+  }));
+
   const items = [
-    {
-      type: "Flagship AI",
-      title: "MindMate: Generative AI Platform",
-      sub: "Gemini LLM, SSE streaming, emotion classification",
-      action: () => router.push("/project/mindmate"),
-      icon: FolderGit2
-    },
-    {
-      type: "Internship",
-      title: "Infosys Springboard: SAR Oil Spill Detection",
-      sub: "Deep Learning satellite computer vision pipeline",
-      action: () => router.push("/project/oil-spill"),
-      icon: Briefcase
-    },
-    {
-      type: "Project",
-      title: "CoinVision: OpenCV Detection",
-      sub: "Canny edge & contour recognition system",
-      action: () => router.push("/project/coinvision"),
-      icon: FolderGit2
-    },
-    {
-      type: "Project",
-      title: "Inventory Management: Relational DBMS",
-      sub: "SQL schema, ACID transactions, access control",
-      action: () => router.push("/project/inventory"),
-      icon: FolderGit2
-    },
-    {
-      type: "Project",
-      title: "Finance Tracker: Dynamic Budget Engine",
-      sub: "JavaScript analytics, transaction ledger",
-      action: () => router.push("/project/finance-tracker"),
-      icon: FolderGit2
-    },
-    {
-      type: "Project",
-      title: "Netflix Clone: Streaming UI",
-      sub: "Live deployed on Vercel edge network",
-      action: () => router.push("/project/netflix-clone"),
-      icon: FolderGit2
-    },
+    ...projectItems,
     {
       type: "Navigation",
-      title: "Jump to About & Architecture",
-      sub: "System design principles & stack pills",
+      title: "Jump to About & Skills",
+      sub: "Profile and technical skills",
       action: () => scrollToSection("about"),
       icon: Command
     },
     {
       type: "Navigation",
+      title: "Jump to Experience",
+      sub: "Internship and project experience",
+      action: () => scrollToSection("experience"),
+      icon: Command
+    },
+    {
+      type: "Navigation",
       title: "Jump to Academics & Coursework",
-      sub: "B.Tech in CSE (AI/ML) & Springboard Cert",
+      sub: "B.Tech in Computer Science and Engineering",
       action: () => scrollToSection("academics"),
       icon: GraduationCap
     },
     {
       type: "Navigation",
       title: "Jump to Achievements & Milestones",
-      sub: "Recognitions and verified engineering deliverables",
+      sub: "Certifications and event leadership",
       action: () => scrollToSection("achievements"),
       icon: Trophy
     },
@@ -94,7 +69,7 @@ export function CommandPalette() {
       type: "External",
       title: "LinkedIn Profile",
       sub: "Connect professionally on LinkedIn",
-      action: () => window.open("https://linkedin.com/in/shivanandh-v", "_blank"),
+      action: () => window.open("https://linkedin.com/in/shivanandh-v-60525a275", "_blank"),
       icon: LinkedinIcon
     }
   ];
@@ -150,13 +125,11 @@ export function CommandPalette() {
   }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+    if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
 
   // Keyboard navigation within results
-  const handleItemNavigation = (e: React.KeyboardEvent) => {
+  const handleItemNavigation = (e: ReactKeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((prev) => (prev + 1) % (filteredItems.length || 1));
@@ -173,7 +146,7 @@ export function CommandPalette() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-md">
       {/* Backdrop click to close */}
       <div className="fixed inset-0" onClick={closePalette} />
 

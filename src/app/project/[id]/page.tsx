@@ -1,10 +1,11 @@
-import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projectsData } from "@/data/projects";
-import { ArrowLeft, ExternalLink, Activity, Terminal, CheckCircle2, GitBranch, Cpu, Sparkles } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { GithubIcon } from "@/components/Icons";
 import { ImpactMetrics } from "@/components/ImpactMetrics";
+import { ArchitectureDiagram } from "@/components/ArchitectureDiagram";
+import { ProjectChallenges } from "@/components/ProjectChallenges";
 import { Footer } from "@/components/Footer";
 
 export async function generateStaticParams() {
@@ -30,43 +31,27 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className="pt-28 pb-16 min-h-screen flex flex-col justify-between">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Back Link */}
         <div className="mb-8">
           <Link
             href="/#projects"
-            className="inline-flex items-center gap-2 text-xs font-mono text-[var(--text-secondary)] hover:text-cyan-400 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[var(--foreground-secondary)] hover:text-[var(--accent)] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Featured Codebases</span>
+            <span>Back to projects</span>
           </Link>
         </div>
 
         {/* Hero Header */}
-        <div className="apple-card p-6 sm:p-10 mb-10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full filter blur-3xl -z-10" />
+        <header className="mb-10 border-b border-[var(--border)] pb-9">
+          <p className="mb-3 text-sm font-semibold text-[var(--accent)]">{project.badge}</p>
 
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-medium">
-              {project.badge}
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2.5 py-0.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-glass)] text-[11px] font-mono text-[var(--text-secondary)]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)] mb-4">
+          <h1 className="text-3xl leading-tight text-[var(--foreground)] sm:text-4xl lg:text-5xl mb-4">
             {project.title}
           </h1>
 
-          <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-4xl mb-8">
+          <p className="text-base sm:text-lg text-[var(--foreground-secondary)] leading-relaxed max-w-4xl mb-7">
             {project.tagline}
           </p>
 
@@ -76,84 +61,83 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2.5 rounded-xl bg-[var(--text-primary)] text-[var(--bg-body)] text-xs font-semibold hover:opacity-90 transition-all flex items-center gap-2 shadow-md"
+              className="px-4 py-2.5 rounded-md bg-[var(--accent)] text-[var(--accent-foreground)] text-sm font-semibold hover:brightness-95 transition-all flex items-center gap-2"
             >
               <GithubIcon className="w-4 h-4" />
               <span>{project.githubLabel}</span>
             </a>
 
-            {project.frontendUrl && (
-              <a
-                href={project.frontendUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-glass)] text-xs font-semibold text-[var(--text-primary)] hover:border-cyan-500/40 hover:text-cyan-400 transition-all flex items-center gap-2"
-              >
-                <GitBranch className="w-4 h-4" />
-                <span>Frontend Repository</span>
-              </a>
-            )}
-
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/25 transition-all flex items-center gap-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>View Live Deployment</span>
-              </a>
-            )}
           </div>
-        </div>
+        </header>
 
         {/* Impact Metrics Row */}
-        <div className="mb-10">
+        <div id="metrics" className="mb-10">
           <ImpactMetrics project={project} />
         </div>
 
-        {/* Architecture Flow & Details */}
-        <div className="apple-card p-6 sm:p-8 mb-10">
-          <div className="flex items-center gap-2 mb-4">
-            <Cpu className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">
-              System Architecture & Execution Pipeline
-            </h2>
-          </div>
+        <div className="divide-y divide-[var(--border)]">
+            <section id="overview" className="grid gap-8 py-8 md:grid-cols-2">
+              <div>
+                <h2 className="mb-3 text-2xl text-[var(--foreground)]">Project Overview</h2>
+                <p className="leading-relaxed text-[var(--foreground-secondary)]">{project.caseStudy.overview}</p>
+              </div>
+              <div>
+                <h2 className="mb-3 text-2xl text-[var(--foreground)]">Problem</h2>
+                <p className="leading-relaxed text-[var(--foreground-secondary)]">{project.caseStudy.problem}</p>
+              </div>
+              <div className="md:col-span-2">
+                <h2 className="mb-3 text-2xl text-[var(--foreground)]">My Contribution</h2>
+                <p className="max-w-4xl leading-relaxed text-[var(--foreground-secondary)]">{project.caseStudy.contribution}</p>
+              </div>
+            </section>
 
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
-            {project.archDesc}
-          </p>
+            <section id="implementation" className="py-8">
+              <h2 className="mb-5 text-2xl text-[var(--foreground)]">Technical Implementation</h2>
+              <dl className="grid gap-x-10 md:grid-cols-2">
+                {project.caseStudy.implementation.map((item) => (
+                  <div key={item.area} className="border-t border-[var(--border)] py-4">
+                    <dt className="mb-1 text-sm font-semibold text-[var(--foreground)]">{item.area}</dt>
+                    <dd className="text-sm leading-relaxed text-[var(--foreground-secondary)]">{item.details}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
 
-          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-glass)] flex items-center justify-between text-xs font-mono">
-            <div className="flex items-center gap-2 text-cyan-400">
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Production Pipeline Tested & Verified</span>
-            </div>
-            <span className="text-[var(--text-tertiary)] font-mono">{project.codeFile}</span>
-          </div>
-        </div>
+            <section id="features" className="grid gap-8 py-8 md:grid-cols-2">
+              <div>
+                <h2 className="mb-4 text-2xl text-[var(--foreground)]">Features</h2>
+                <ul className="space-y-2 text-sm text-[var(--foreground-secondary)]">
+                  {project.caseStudy.features.map((feature) => (
+                    <li key={feature} className="flex gap-3">
+                      <span className="text-[var(--accent)]" aria-hidden="true">•</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div id="challenges">
+                <h2 className="mb-3 text-2xl text-[var(--foreground)]">Challenges &amp; Solutions</h2>
+                <ProjectChallenges project={project} />
+              </div>
+            </section>
 
-        {/* Code Snippet Viewer */}
-        <div className="apple-card p-6 sm:p-8 mb-12">
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-[var(--border-glass)]">
-            <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-cyan-400" />
-              <span className="text-xs font-mono text-[var(--text-primary)] font-semibold">
-                {project.codeFile}
-              </span>
-            </div>
-            <span className="text-[10px] font-mono text-[var(--text-tertiary)] uppercase px-2 py-0.5 rounded bg-[var(--bg-surface)]">
-              Core Source Implementation
-            </span>
-          </div>
+            <section id="architecture" className="py-8">
+              <h2 className="mb-4 text-2xl text-[var(--foreground)]">Architecture</h2>
+              <p className="mb-5 max-w-4xl text-sm leading-relaxed text-[var(--foreground-secondary)]">{project.archDesc}</p>
+              <ArchitectureDiagram project={project} />
+            </section>
 
-          <div className="bg-black/60 rounded-xl p-4 sm:p-6 overflow-x-auto border border-[var(--border-glass)]">
-            <pre className="text-xs font-mono text-cyan-300/90 leading-relaxed">
-              <code>{project.code}</code>
-            </pre>
-          </div>
+            <section id="technology-stack" className="py-8">
+              <h2 className="mb-5 text-2xl text-[var(--foreground)]">Technology Stack</h2>
+              <div className="grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
+                {project.caseStudy.techStack.map((group) => (
+                  <div key={group.category} className="border-t border-[var(--border)] py-4">
+                    <h3 className="mb-2 text-sm font-semibold text-[var(--foreground)]">{group.category}</h3>
+                    <p className="text-sm leading-relaxed text-[var(--foreground-secondary)]">{group.tools.join(" · ")}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
         </div>
 
         {/* Next / Prev Project Navigation */}

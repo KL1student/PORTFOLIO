@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sun, Moon, Command, Menu, X, ArrowUpRight } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
@@ -45,7 +45,7 @@ export function Navigation() {
           href="/"
           className="flex items-center gap-2.5 group cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-lg bg-[var(--text-primary)] flex items-center justify-center text-[var(--bg-body)] font-semibold text-sm tracking-tighter group-hover:bg-blue-600 group-hover:text-white transition-colors">
+          <div className="w-9 h-9 rounded-md bg-[var(--foreground)] flex items-center justify-center text-[var(--background)] font-semibold text-sm tracking-tighter group-hover:bg-[var(--accent)] group-hover:text-[var(--accent-foreground)] transition-colors">
             SV
           </div>
           <div className="flex flex-col">
@@ -54,7 +54,7 @@ export function Navigation() {
             </span>
             <span className="text-[11px] font-mono text-[var(--text-tertiary)] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              AI/ML Engineer
+              AI/ML + Software Developer
             </span>
           </div>
         </Link>
@@ -65,7 +65,7 @@ export function Navigation() {
             <Link
               key={link.label}
               href={link.href}
-              className="py-2 text-xs font-medium text-[var(--text-secondary)] transition-colors duration-200 hover:text-blue-600"
+              className="py-2 text-xs font-medium text-[var(--foreground-secondary)] transition-colors duration-200 hover:text-[var(--accent)]"
             >
               {link.label}
             </Link>
@@ -91,19 +91,19 @@ export function Navigation() {
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
-            className="w-9 h-9 rounded-lg bg-[var(--bg-card)] border border-[var(--border-glass)] flex items-center justify-center text-[var(--text-secondary)] hover:text-blue-600 hover:border-blue-200 transition-all"
+              className="w-9 h-9 rounded-md bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--foreground-secondary)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all"
           >
             {theme === "dark" ? (
               <Sun className="w-4 h-4 text-amber-400" />
             ) : (
-              <Moon className="w-4 h-4 text-violet-600" />
+              <Moon className="w-4 h-4 text-[var(--accent)]" />
             )}
           </button>
 
           {/* Connect CTA */}
           <Link
             href="/#contact"
-            className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-md bg-[var(--accent)] text-[var(--accent-foreground)] hover:brightness-95 transition-colors"
           >
             <span>Connect</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -113,7 +113,7 @@ export function Navigation() {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Navigation Menu"
-            className="md:hidden w-9 h-9 rounded-xl bg-[var(--bg-card)] border border-[var(--border-glass)] flex items-center justify-center text-[var(--text-secondary)]"
+            className="md:hidden w-9 h-9 rounded-md bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--foreground-secondary)]"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
@@ -139,7 +139,7 @@ export function Navigation() {
                 setMobileMenuOpen(false);
                 triggerCommandPalette();
               }}
-              className="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-cyan-400 rounded-xl hover:bg-[var(--bg-card)] transition-colors"
+              className="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-[var(--accent)] rounded-md hover:bg-[var(--surface)] transition-colors"
             >
               <span className="flex items-center gap-2">
                 <Command className="w-4 h-4" />

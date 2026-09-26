@@ -1,130 +1,93 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import { ArrowDown } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowDown, Download, FileText } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
 
 export function Hero() {
+  const reduceMotion = useReducedMotion();
+  const enter = (delay: number) => ({
+    initial: reduceMotion ? false : { opacity: 0, y: 14, filter: "blur(5px)" },
+    animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+    transition: { duration: reduceMotion ? 0 : 0.55, delay: reduceMotion ? 0 : delay }
+  });
+
   return (
-    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: Context & Bio */}
-          <div className="lg:col-span-7 flex flex-col items-start">
-            {/* Status Pill */}
-            <div className="inline-flex items-center gap-2 mb-6 text-xs font-mono text-blue-600 uppercase tracking-wider">
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-              </span>
-              <span className="text-xs font-mono font-medium tracking-tight text-[var(--text-secondary)]">
-                OPEN FOR AI/ML & SWE ROLES
-              </span>
-            </div>
+    <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-24">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
+        <div className="flex flex-col items-start lg:col-span-7">
+          <motion.p {...enter(0.04)} className="mb-4 text-sm font-semibold text-[var(--accent)]">
+            AI/ML + Software Developer <span className="px-1.5 text-[var(--foreground-muted)]" aria-hidden="true">/</span> CSE Graduate
+          </motion.p>
+          <motion.h1 {...enter(0.12)} className="mb-5 max-w-3xl text-5xl leading-[0.98] text-[var(--foreground)] sm:text-6xl lg:text-7xl">
+            SHIVANANDH V
+          </motion.h1>
+          <motion.p {...enter(0.24)} className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--foreground-secondary)] sm:text-lg">
+            I work across <strong className="font-semibold text-[var(--foreground)]">AI/ML</strong> and <strong className="font-semibold text-[var(--foreground)]">Full-Stack Development</strong>, using <strong className="font-semibold text-[var(--foreground)]">Python</strong> to build data-driven applications and practical <strong className="font-semibold text-[var(--foreground)]">system software</strong>. My work spans backend development, APIs, databases, and user-facing interfaces, with an emphasis on turning a defined problem into software people can use.
+          </motion.p>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-semibold tracking-tight text-[var(--text-primary)] leading-[1.04] mb-6 max-w-4xl">
-              AI/ML systems and software that make complex work clearer.
-            </h1>
+          <motion.div {...enter(0.36)} className="mb-8 flex flex-wrap items-center gap-3">
+            <Link
+              href="#projects"
+              className="group inline-flex min-h-11 items-center gap-2 rounded-md bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition-colors hover:brightness-95"
+            >
+              <span>View Projects</span>
+              <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+            </Link>
+            <button
+              type="button"
+              disabled
+              title="Resume PDF will be added"
+              aria-label="Download Resume. Resume PDF will be added."
+              className="inline-flex min-h-11 cursor-not-allowed items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-sm font-semibold text-[var(--foreground-muted)]"
+            >
+              <Download className="h-4 w-4" />
+              <span>Download Resume</span>
+              <span className="sr-only">Resume PDF will be added</span>
+            </button>
+          </motion.div>
 
-            {/* Tagline */}
-            <p className="text-base sm:text-lg text-[var(--text-secondary)] font-normal leading-relaxed max-w-2xl mb-8">
-              Hi, I&apos;m <span className="text-[var(--text-primary)] font-semibold">Shivanandh V</span> (<code className="text-cyan-500 text-sm font-mono">@KL1student</code>).
-              Computer Science Engineer specializing in <span className="text-[var(--text-primary)] font-medium">Generative AI LLM pipelines</span>, 
-              <span className="text-[var(--text-primary)] font-medium">Satellite Computer Vision</span> (Infosys Springboard), and <span className="text-blue-600 font-semibold">Full Stack</span> software architectures.
-            </p>
+          <motion.div {...enter(0.46)} className="flex flex-wrap gap-3">
+            <a
+              href="https://github.com/KL1student"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            >
+              <GithubIcon className="h-4 w-4" aria-hidden="true" />
+              <span>GitHub</span>
+            </a>
+            <a
+              href="https://linkedin.com/in/shivanandh-v-60525a275"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            >
+              <LinkedinIcon className="h-4 w-4" aria-hidden="true" />
+              <span>LinkedIn</span>
+            </a>
+          </motion.div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3.5 mb-10">
-              <Link
-                href="#projects"
-                className="px-6 py-3 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2 group"
-              >
-                <span>Explore Architecture</span>
-                <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-              </Link>
-
-              <a
-                href="https://github.com/KL1student"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-3 rounded-lg bg-white border border-[var(--border-active)] text-sm font-medium text-[var(--text-primary)] hover:border-blue-300 transition-colors flex items-center gap-2"
-              >
-                <GithubIcon className="w-4 h-4 text-[var(--text-secondary)]" />
-                <span>GitHub</span>
-              </a>
-
-              <a
-                href="https://linkedin.com/in/shivanandh-v"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-3 rounded-lg bg-white border border-[var(--border-active)] text-sm font-medium text-[var(--text-primary)] hover:border-blue-300 transition-colors flex items-center gap-2"
-              >
-                <LinkedinIcon className="w-4 h-4 text-blue-400" />
-                <span>LinkedIn</span>
-              </a>
-            </div>
-
-            {/* Micro-Metrics Row */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[var(--border-glass)] w-full max-w-lg">
-              <div className="rounded-2xl border border-[var(--border-glass)] bg-[var(--bg-card)]/80 p-3 shadow-[0_14px_28px_-22px_rgba(15,23,42,0.28)]">
-                <div className="text-2xl font-bold font-mono tracking-tight text-[var(--text-primary)]">
-                  &lt;180ms
-                </div>
-                <div className="text-[11px] font-mono text-[var(--text-tertiary)] mt-1">
-                  LLM Streaming TTFB
-                </div>
-              </div>
-              <div className="rounded-2xl border border-[var(--border-glass)] bg-[var(--bg-card)]/80 p-3 shadow-[0_14px_28px_-22px_rgba(15,23,42,0.28)]">
-                <div className="text-2xl font-bold font-mono tracking-tight text-[var(--text-primary)]">
-                  94.8%
-                </div>
-                <div className="text-[11px] font-mono text-[var(--text-tertiary)] mt-1">
-                  SAR Oil Spill IoU
-                </div>
-              </div>
-              <div className="rounded-2xl border border-[var(--border-glass)] bg-[var(--bg-card)]/80 p-3 shadow-[0_14px_28px_-22px_rgba(15,23,42,0.28)]">
-                <div className="text-2xl font-bold font-mono tracking-tight text-[var(--text-primary)]">
-                  6+
-                </div>
-                <div className="text-[11px] font-mono text-[var(--text-tertiary)] mt-1">
-                  Production Repos
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Selected work index */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md border-t-2 border-[var(--text-primary)] pt-5">
-              <div className="flex items-center justify-between mb-8">
-                <span className="text-xs font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Selected work</span>
-                <span className="text-xs font-mono text-blue-600">01—06</span>
-              </div>
-              <div className="space-y-0">
-                {[
-                  ["01", "MindMate", "Generative AI platform"],
-                  ["02", "SAR Oil Spill Detection", "Satellite computer vision"],
-                  ["03", "CoinVision", "OpenCV detection system"]
-                ].map(([number, title, detail]) => (
-                  <Link key={number} href="#projects" className="group flex items-start gap-4 py-4 border-b border-[var(--border-glass)]">
-                    <span className="text-xs font-mono text-[var(--text-tertiary)] pt-1">{number}</span>
-                    <span className="flex-1">
-                      <span className="block text-lg font-semibold text-[var(--text-primary)] group-hover:text-blue-600 transition-colors">{title}</span>
-                      <span className="block text-sm text-[var(--text-secondary)] mt-1">{detail}</span>
-                    </span>
-                    <ArrowDown className="w-4 h-4 text-[var(--text-tertiary)] -rotate-45 group-hover:text-blue-600 transition-colors" />
-                  </Link>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 mt-6 text-xs font-mono text-[var(--text-tertiary)]">
-                <span className="w-2 h-2 rounded-full bg-blue-600" />
-                Focused on useful, reliable systems
-              </div>
-            </div>
-          </div>
+          <motion.div {...enter(0.54)} className="mt-8 border-t border-[var(--border)] pt-4 text-sm text-[var(--foreground-muted)]">
+            Frontend <span aria-hidden="true">·</span> Backend &amp; APIs <span aria-hidden="true">·</span> Data-driven applications <span aria-hidden="true">·</span> ML integrations
+          </motion.div>
         </div>
+
+        <motion.div {...enter(0.3)} className="lg:col-span-5">
+          <div
+            role="img"
+            aria-label="Profile photo placeholder with the initials SV"
+            className="relative mx-auto flex aspect-[4/5] w-full max-w-sm flex-col items-center justify-center overflow-hidden rounded-md border border-[var(--border)] bg-[var(--surface-muted)] text-center lg:ml-auto"
+          >
+            <div className="absolute inset-5 border border-[var(--border-active)]" aria-hidden="true" />
+            <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-[var(--border-active)] bg-[var(--surface)] text-3xl font-semibold text-[var(--accent)]">
+              SV
+            </div>
+            <FileText className="relative mt-6 h-5 w-5 text-[var(--foreground-muted)]" aria-hidden="true" />
+            <p className="relative mt-2 text-sm font-medium text-[var(--foreground-secondary)]">Profile photo coming soon</p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Mail, MessageSquare, Send, CheckCircle2, MapPin, Sparkles } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Mail, Send, CheckCircle2, MapPin, Phone } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
 
 export function ContactForm() {
@@ -13,10 +13,39 @@ export function ContactForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const endpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+
+    try {
+      if (!endpoint) {
+        setSubmitError("The email form is not configured yet. Please email me directly using the address on this page.");
+        return;
+      }
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: new FormData(e.currentTarget),
+        headers: { Accept: "application/json" }
+      });
+
+      if (!response.ok) {
+        setSubmitError("Your message could not be sent. Please try again or email me directly.");
+        return;
+      }
+
+      setSubmitted(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setSubmitError("Your message could not be sent. Please check your connection or email me directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleQuickPrompt = (prompt: string) => {
@@ -72,6 +101,46 @@ export function ContactForm() {
             <div className="space-y-4 pt-6 border-t border-[var(--border-glass)]">
               <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
                 <div className="w-9 h-9 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-glass)] flex items-center justify-center text-cyan-400">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--text-tertiary)] font-mono">EMAIL</div>
+                  <a
+                    href="mailto:shivanandhv4@gmail.com"
+                    className="font-medium text-[var(--text-primary)] hover:text-cyan-400 transition-colors"
+                  >
+                    shivanandhv4@gmail.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
+                <div className="w-9 h-9 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-glass)] flex items-center justify-center text-emerald-400">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--text-tertiary)] font-mono">PHONE</div>
+                  <a
+                    href="tel:+919778252544"
+                    className="font-medium text-[var(--text-primary)] hover:text-emerald-400 transition-colors"
+                  >
+                    +91 9778252544
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
+                <div className="w-9 h-9 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-glass)] flex items-center justify-center text-amber-400">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--text-tertiary)] font-mono">LOCATION</div>
+                  <span className="font-medium text-[var(--text-primary)]">Chattanchal, Kasaragod, Kerala, India</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
+                <div className="w-9 h-9 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-glass)] flex items-center justify-center text-cyan-400">
                   <GithubIcon className="w-4 h-4" />
                 </div>
                 <div>
@@ -94,12 +163,12 @@ export function ContactForm() {
                 <div>
                   <div className="text-xs text-[var(--text-tertiary)] font-mono">LINKEDIN</div>
                   <a
-                    href="https://linkedin.com/in/shivanandh-v"
+                    href="https://linkedin.com/in/shivanandh-v-60525a275"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-medium text-[var(--text-primary)] hover:text-blue-400 transition-colors"
                   >
-                    linkedin.com/in/shivanandh-v
+                    linkedin.com/in/shivanandh-v-60525a275
                   </a>
                 </div>
               </div>
@@ -110,15 +179,15 @@ export function ContactForm() {
           <div className="lg:col-span-7">
             <div className="apple-card p-6 sm:p-8">
               {submitted ? (
-                <div className="py-12 flex flex-col items-center justify-center text-center animate-fadeIn">
+                <div className="py-12 flex flex-col items-center justify-center text-center">
                   <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-                    Message Ready to Send
+                    Message Sent
                   </h3>
                   <p className="text-sm text-[var(--text-secondary)] max-w-sm mb-6">
-                    Your message is ready, but this form is not connected to a delivery service yet. Please use GitHub or LinkedIn to reach me directly.
+                    Thanks for reaching out. Your message was delivered, and I&apos;ll reply to your email.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -137,6 +206,7 @@ export function ContactForm() {
                       <input
                         type="text"
                         id="contact-name"
+                        name="name"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -152,6 +222,7 @@ export function ContactForm() {
                       <input
                         type="email"
                         id="contact-email"
+                        name="_replyto"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -168,6 +239,7 @@ export function ContactForm() {
                     <input
                       type="text"
                       id="contact-subject"
+                      name="_subject"
                       required
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -183,6 +255,7 @@ export function ContactForm() {
                     <textarea
                       rows={5}
                       id="contact-message"
+                      name="message"
                       required
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -191,13 +264,19 @@ export function ContactForm() {
                     />
                   </div>
 
+                  {submitError && (
+                    <p role="alert" className="text-sm text-red-400">
+                      {submitError}
+                    </p>
+                  )}
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full py-3.5 px-6 rounded-xl bg-[var(--text-primary)] text-[var(--bg-body)] text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                   >
                     {isSubmitting ? (
-                      <span>Transmitting Payload...</span>
+                      <span>Sending...</span>
                     ) : (
                       <>
                         <span>Send Message</span>
